@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MP Quiz">
+<title>Know Your MPs</title>
+<style>
+:root{
+  --bg:#ffffff; --surface:#f7f7f7; --text:#3c3c3c; --muted:#777; --line:#e5e5e5;
+  --green:#58cc02; --green-dark:#46a302; --green-soft:#d7ffb8; --green-text:#58a700;
+  --red:#ff4b4b; --red-dark:#ea2b2b; --red-soft:#ffdfe0; --red-text:#ea2b2b;
+  --blue:#1cb0f6; --blue-dark:#1899d6; --blue-soft:#ddf4ff;
+  --gold:#ffc800; --orange:#ff9600;
+  --opt-bg:#fff; --opt-shadow:#e5e5e5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#131f24; --surface:#1d2c33; --text:#f1f7fb; --muted:#93a3ab; --line:#37464f;
+    --green-soft:#1f3a14; --green-text:#79d634; --red-soft:#3d1f22; --red-text:#ff7878;
+    --blue-soft:#14313f; --opt-bg:#131f24; --opt-shadow:#37464f;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 "Nunito","Segoe UI",system-ui,-apple-system,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 140px}
+.hidden{display:none!important}
+
+/* top stats */
+.stats{display:flex;gap:18px;align-items:center;justify-content:flex-end;font-weight:800;padding:4px 0 16px}
+.stat{display:flex;align-items:center;gap:6px}
+.stat .ic{font-size:20px}
+.stat.streak{color:var(--orange)} .stat.xp{color:var(--gold)} .stat.mast{color:var(--blue)}
+.iconbtn{background:none;border:0;font-size:20px;padding:4px;opacity:.75}
+.iconbtn:hover{opacity:1}
+
+h1{font-size:28px;margin:0 0 4px;font-weight:900}
+.sub{color:var(--muted);margin:0 0 24px}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:28px 0 10px;font-weight:800}
+
+select{width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg);color:var(--text);font:inherit;font-weight:700}
+
+.levels{display:grid;gap:12px}
+.level{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:16px;border-radius:16px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg)}
+.level:hover:not(:disabled){background:var(--surface)}
+.level:disabled{opacity:.5;cursor:not-allowed}
+.level .num{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:20px;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-dark)}
+.level:disabled .num{background:var(--line);box-shadow:0 4px 0 var(--opt-shadow)}
+.level .t{font-weight:800;font-size:17px}
+.level .d{color:var(--muted);font-size:14px}
+.meter{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;background:var(--blue);border-radius:8px}
+.level .lock{margin-left:auto;font-size:20px}
+
+.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:28px}
+.link{background:none;border:0;color:var(--blue);font-weight:800;padding:0;text-transform:uppercase;font-size:14px;letter-spacing:.04em}
+.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:14px}
+
+/* lesson */
+.lessontop{display:flex;align-items:center;gap:14px;padding:4px 0 24px}
+.close{background:none;border:0;font-size:26px;color:var(--muted);line-height:1;padding:0 4px}
+.bar{flex:1;height:16px;border-radius:16px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:16px;transition:width .35s ease;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08), inset 0 4px 0 rgba(255,255,255,.25)}
+.combo{font-weight:900;color:var(--orange);min-width:52px;text-align:right}
+
+.prompt{font-size:22px;font-weight:900;margin:0 0 18px}
+.tag{display:inline-block;font-size:12px;font-weight:900;color:#a560e8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.card{display:flex;justify-content:center;margin-bottom:22px}
+.photo{height:230px;width:142px;object-fit:cover;border-radius:16px;border:2px solid var(--line);background:var(--surface)}
+.bigtext{width:100%;padding:28px 20px;border-radius:16px;border:2px solid var(--line);text-align:center}
+.bigtext .main{font-size:26px;font-weight:900}
+.bigtext .prov{color:var(--muted);font-weight:700;margin-top:4px}
+
+.opts{display:grid;gap:12px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg);font-weight:700;font-size:17px}
+.opt:hover:not(:disabled){background:var(--surface)}
+.opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--muted)}
+.opt.picked{border-color:var(--blue);background:var(--blue-soft)}
+.opt.right{border-color:var(--green);background:var(--green-soft);color:var(--green-text)}
+.opt.wrong{border-color:var(--red);background:var(--red-soft);color:var(--red-text)}
+.opt:disabled{cursor:default}
+
+/* footer */
+.foot{position:fixed;left:0;right:0;bottom:0;border-top:2px solid var(--line);background:var(--bg)}
+.foot.ok{background:var(--green-soft);border-color:transparent}
+.foot.bad{background:var(--red-soft);border-color:transparent}
+.footin{max-width:640px;margin:0 auto;padding:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.fb{flex:1;min-width:200px;display:flex;gap:12px;align-items:center}
+.fb img{width:52px;height:84px;object-fit:cover;border-radius:10px;flex:none}
+.fb .h{font-size:22px;font-weight:900}
+.foot.ok .h{color:var(--green-text)} .foot.bad .h,.foot.bad .ans{color:var(--red-text)}
+.fb .ans{font-weight:700}
+.btn{border:0;border-radius:14px;padding:14px 28px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-dark);min-width:150px}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--green-dark)}
+.btn.red{background:var(--red);box-shadow:0 4px 0 var(--red-dark)}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)}
+.btn:disabled{background:var(--line);box-shadow:0 4px 0 var(--opt-shadow);color:var(--muted);cursor:default}
+.footin .btn{margin-left:auto}
+
+/* results */
+.done{text-align:center;padding-top:24px}
+.done .big{font-size:56px}
+.done h1{color:var(--gold)}
+.tiles{display:flex;gap:12px;justify-content:center;margin:24px 0}
+.tile{flex:1;max-width:150px;border-radius:16px;border:2px solid var(--gold);overflow:hidden}
+.tile .l{background:var(--gold);color:#fff;font-weight:900;font-size:13px;text-transform:uppercase;padding:4px}
+.tile .v{font-size:24px;font-weight:900;padding:12px 4px}
+.tile.g{border-color:var(--green)} .tile.g .l{background:var(--green)}
+.tile.b{border-color:var(--blue)} .tile.b .l{background:var(--blue)}
+.review{text-align:left;margin-top:16px}
+.rv{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:2px solid var(--line)}
+.rv img{width:44px;height:71px;object-fit:cover;border-radius:8px;flex:none}
+.rv .n{font-weight:800} .rv .r{color:var(--muted);font-size:14px}
+
+/* study grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
+.gcard{border:2px solid var(--line);border-radius:14px;padding:8px;text-align:center}
+.gcard img{width:100%;aspect-ratio:142/230;object-fit:cover;border-radius:10px}
+.gcard .n{font-weight:800;font-size:14px;margin-top:6px}
+.gcard .r{color:var(--muted);font-size:12px}
+.gcard .s{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pop{animation:pop .25s ease} .shake{animation:shake .3s ease}
+@media (max-width:480px){.photo{height:200px;width:124px}.prompt{font-size:19px}.bigtext .main{font-size:22px}.btn{min-width:0;width:100%}.footin .btn{margin-left:0}}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="wrap">
+  <div class="stats">
+    <span class="stat streak" title="Day streak"><span class="ic">🔥</span><span id="sStreak">0</span></span>
+    <span class="stat xp" title="Total XP"><span class="ic">⚡</span><span id="sXp">0</span></span>
+    <span class="stat mast" title="Mastered cards in this deck"><span class="ic">🎓</span><span id="sMast">0</span></span>
+    <button class="iconbtn" id="soundBtn" title="Sound on/off">🔊</button>
+  </div>
+  <h1>Know Your MPs</h1>
+  <p class="sub">Liberal caucus · <span id="deckCount"></span></p>
+
+  <h2>Deck</h2>
+  <select id="deck"></select>
+
+  <h2>Pick a level</h2>
+  <div class="levels" id="levels"></div>
+  <label class="toggle"><input type="checkbox" id="unlockAll"> Unlock all levels</label>
+
+  <div class="links">
+    <button class="link" id="studyBtn">Study the deck</button>
+    <button class="link" id="resetBtn" style="color:var(--red)">Reset progress</button>
+  </div>
+</div>
+
+<!-- LESSON -->
+<div id="lesson" class="wrap hidden">
+  <div class="lessontop">
+    <button class="close" id="quitBtn" title="Quit lesson">✕</button>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="combo" id="combo"></div>
+  </div>
+  <div id="q"></div>
+</div>
+<div class="foot hidden" id="foot"><div class="footin">
+  <div class="fb" id="fb"></div>
+  <button class="btn" id="footBtn">Check</button>
+</div></div>
+
+<!-- RESULTS -->
+<div id="results" class="wrap hidden"></div>
+
+<!-- STUDY -->
+<div id="study" class="wrap hidden"></div>
+
+<script>
+const DATA = {"mps": [{"id": "123092", "first": "Sima", "last": "Acan", "name": "Sima Acan", "riding": "Oakville West", "prov": "Ontario"}, {"id": "123033", "first": "Fares", "last": "Al Soud", "name": "Fares Al Soud", "riding": "Mississauga Centre", "prov": "Ontario"}, {"id": "110339", "first": "Shafqat", "last": "Ali", "name": "Shafqat Ali", "riding": "Brampton—Chinguacousy Park", "prov": "Ontario"}, {"id": "123675", "first": "Rebecca", "last": "Alty", "name": "Rebecca Alty", "riding": "Northwest Territories", "prov": "Northwest Territories"}, {"id": "96081", "first": "Anita", "last": "Anand", "name": "Anita Anand", "riding": "Oakville East", "prov": "Ontario"}, {"id": "89449", "first": "Gary", "last": "Anandasangaree", "name": "Gary Anandasangaree", "riding": "Scarborough—Guildwood—Rouge Park", "prov": "Ontario"}, {"id": "122753", "first": "Tatiana", "last": "Auguste", "name": "Tatiana Auguste", "riding": "Terrebonne", "prov": "Quebec"}, {"id": "111067", "first": "Parm", "last": "Bains", "name": "Parm Bains", "riding": "Richmond East—Steveston", "prov": "British Columbia"}, {"id": "105121", "first": "Yvan", "last": "Baker", "name": "Yvan Baker", "riding": "Etobicoke Centre", "prov": "Ontario"}, {"id": "123214", "first": "Karim", "last": "Bardeesy", "name": "Karim Bardeesy", "riding": "Taiaiako'n—Parkdale—High Park", "prov": "Ontario"}, {"id": "104571", "first": "Jaime", "last": "Battiste", "name": "Jaime Battiste", "riding": "Cape Breton—Canso—Antigonish", "prov": "Nova Scotia"}, {"id": "89236", "first": "Terry", "last": "Beech", "name": "Terry Beech", "riding": "Burnaby North—Seymour", "prov": "British Columbia"}, {"id": "141713", "first": "Doly", "last": "Begum", "name": "Doly Begum", "riding": "Scarborough Southwest", "prov": "Ontario"}, {"id": "110791", "first": "Buckley", "last": "Belanger", "name": "Buckley Belanger", "riding": "Desnethé—Missinippi—Churchill River", "prov": "Saskatchewan"}, {"id": "88567", "first": "Rachel", "last": "Bendayan", "name": "Rachel Bendayan", "riding": "Outremont", "prov": "Quebec"}, {"id": "88934", "first": "Chris", "last": "Bittle", "name": "Chris Bittle", "riding": "St. Catharines", "prov": "Ontario"}, {"id": "104555", "first": "Kody", "last": "Blois", "name": "Kody Blois", "riding": "Kings—Hants", "prov": "Nova Scotia"}, {"id": "104977", "first": "Élisabeth", "last": "Brière", "name": "Élisabeth Brière", "riding": "Sherbrooke", "prov": "Quebec"}, {"id": "142764", "first": "Braeden", "last": "Caley", "name": "Braeden Caley", "riding": "North Vancouver—Capilano", "prov": "British Columbia"}, {"id": "28286", "first": "Mark", "last": "Carney", "name": "Mark Carney", "riding": "Nepean", "prov": "Ontario"}, {"id": "115744", "first": "Ben", "last": "Carr", "name": "Ben Carr", "riding": "Winnipeg South Centre", "prov": "Manitoba"}, {"id": "71270", "first": "Sean", "last": "Casey", "name": "Sean Casey", "riding": "Charlottetown", "prov": "Prince Edward Island"}, {"id": "89000", "first": "Bardish", "last": "Chagger", "name": "Bardish Chagger", "riding": "Waterloo", "prov": "Ontario"}, {"id": "88633", "first": "François-Philippe", "last": "Champagne", "name": "François-Philippe Champagne", "riding": "Saint-Maurice—Champlain", "prov": "Quebec"}, {"id": "123520", "first": "Wade", "last": "Chang", "name": "Wade Chang", "riding": "Burnaby Central", "prov": "British Columbia"}, {"id": "89464", "first": "Rebecca", "last": "Chartrand", "name": "Rebecca Chartrand", "riding": "Churchill—Keewatinook Aski", "prov": "Manitoba"}, {"id": "110225", "first": "Sophie", "last": "Chatel", "name": "Sophie Chatel", "riding": "Pontiac—Kitigan Zibi", "prov": "Quebec"}, {"id": "122756", "first": "Madeleine", "last": "Chenette", "name": "Madeleine Chenette", "riding": "Thérèse-De Blainville", "prov": "Quebec"}, {"id": "122899", "first": "Maggie", "last": "Chi", "name": "Maggie Chi", "riding": "Don Valley North", "prov": "Ontario"}, {"id": "119705", "first": "Leslie", "last": "Church", "name": "Leslie Church", "riding": "Toronto—St. Paul's", "prov": "Ontario"}, {"id": "122437", "first": "Braedon", "last": "Clark", "name": "Braedon Clark", "riding": "Sackville—Bedford—Preston", "prov": "Nova Scotia"}, {"id": "122369", "first": "Paul", "last": "Connors", "name": "Paul Connors", "riding": "Avalon", "prov": "Newfoundland and Labrador"}, {"id": "88350", "first": "Serge", "last": "Cormier", "name": "Serge Cormier", "riding": "Acadie—Bathurst", "prov": "New Brunswick"}, {"id": "110373", "first": "Michael", "last": "Coteau", "name": "Michael Coteau", "riding": "Scarborough—Woburn", "prov": "Ontario"}, {"id": "49344", "first": "Chris", "last": "d'Entremont", "name": "Chris d'Entremont", "riding": "Acadie—Annapolis", "prov": "Nova Scotia"}, {"id": "88994", "first": "Julie", "last": "Dabrusin", "name": "Julie Dabrusin", "riding": "Toronto—Danforth", "prov": "Ontario"}, {"id": "122559", "first": "Marianne", "last": "Dandurand", "name": "Marianne Dandurand", "riding": "Compton—Stanstead", "prov": "Quebec"}, {"id": "122959", "first": "John-Paul", "last": "Danko", "name": "John-Paul Danko", "riding": "Hamilton West—Ancaster—Dundas", "prov": "Ontario"}, {"id": "122473", "first": "Guillaume", "last": "Deschênes-Thériault", "name": "Guillaume Deschênes-Thériault", "riding": "Madawaska—Restigouche", "prov": "New Brunswick"}, {"id": "110124", "first": "Caroline", "last": "Desrochers", "name": "Caroline Desrochers", "riding": "Trois-Rivières", "prov": "Quebec"}, {"id": "31098", "first": "Sukh", "last": "Dhaliwal", "name": "Sukh Dhaliwal", "riding": "Surrey Newton", "prov": "British Columbia"}, {"id": "88453", "first": "Anju", "last": "Dhillon", "name": "Anju Dhillon", "riding": "Dorval—Lachine—LaSalle", "prov": "Quebec"}, {"id": "109915", "first": "Lena Metlege", "last": "Diab", "name": "Lena Metlege Diab", "riding": "Halifax West—Peggy's Cove", "prov": "Nova Scotia"}, {"id": "89408", "first": "Jean-Yves", "last": "Duclos", "name": "Jean-Yves Duclos", "riding": "Québec Centre", "prov": "Quebec"}, {"id": "31119", "first": "Terry", "last": "Duguid", "name": "Terry Duguid", "riding": "Winnipeg South", "prov": "Manitoba"}, {"id": "88721", "first": "Julie", "last": "Dzerowicz", "name": "Julie Dzerowicz", "riding": "Davenport", "prov": "Ontario"}, {"id": "122380", "first": "Philip", "last": "Earle", "name": "Philip Earle", "riding": "Labrador", "prov": "Newfoundland and Labrador"}, {"id": "89010", "first": "Ali", "last": "Ehsassi", "name": "Ali Ehsassi", "riding": "Willowdale", "prov": "Ontario"}, {"id": "88515", "first": "Fayçal", "last": "El-Khoury", "name": "Fayçal El-Khoury", "riding": "Laval—Les Îles", "prov": "Quebec"}, {"id": "89027", "first": "Doug", "last": "Eyolfson", "name": "Doug Eyolfson", "riding": "Winnipeg West", "prov": "Manitoba"}, {"id": "122443", "first": "Jessica", "last": "Fancy", "name": "Jessica Fancy", "riding": "South Shore—St. Margarets", "prov": "Nova Scotia"}, {"id": "122850", "first": "Bruce", "last": "Fanjoy", "name": "Bruce Fanjoy", "riding": "Carleton", "prov": "Ontario"}, {"id": "88478", "first": "Greg", "last": "Fergus", "name": "Greg Fergus", "riding": "Hull—Aylmer", "prov": "Quebec"}, {"id": "88323", "first": "Darren", "last": "Fisher", "name": "Darren Fisher", "riding": "Dartmouth—Cole Harbour", "prov": "Nova Scotia"}, {"id": "71692", "first": "Peter", "last": "Fonseca", "name": "Peter Fonseca", "riding": "Mississauga East—Cooksville", "prov": "Ontario"}, {"id": "96356", "first": "Mona", "last": "Fortier", "name": "Mona Fortier", "riding": "Ottawa—Vanier—Gloucester", "prov": "Ontario"}, {"id": "88827", "first": "Peter", "last": "Fragiskatos", "name": "Peter Fragiskatos", "riding": "London Centre", "prov": "Ontario"}, {"id": "88316", "first": "Sean", "last": "Fraser", "name": "Sean Fraser", "riding": "Central Nova", "prov": "Nova Scotia"}, {"id": "1589", "first": "Hedy", "last": "Fry", "name": "Hedy Fry", "riding": "Vancouver Centre", "prov": "British Columbia"}, {"id": "89279", "first": "Stephen", "last": "Fuhr", "name": "Stephen Fuhr", "riding": "Kelowna", "prov": "British Columbia"}, {"id": "110534", "first": "Iqwinder", "last": "Gaheer", "name": "Iqwinder Gaheer", "riding": "Mississauga—Malton", "prov": "Ontario"}, {"id": "115736", "first": "Anna", "last": "Gainey", "name": "Anna Gainey", "riding": "Notre-Dame-de-Grâce—Westmount", "prov": "Quebec"}, {"id": "122911", "first": "Vince", "last": "Gasparro", "name": "Vince Gasparro", "riding": "Eglinton—Lawrence", "prov": "Ontario"}, {"id": "88802", "first": "Mark", "last": "Gerretsen", "name": "Mark Gerretsen", "riding": "Kingston and the Islands", "prov": "Ontario"}, {"id": "88938", "first": "Marilyn", "last": "Gladu", "name": "Marilyn Gladu", "riding": "Sarnia—Lambton—Bkejwanong", "prov": "Ontario"}, {"id": "107294", "first": "Daniel", "last": "Gobeil", "name": "Daniel Gobeil", "riding": "Chicoutimi—Le Fjord", "prov": "Quebec"}, {"id": "88715", "first": "Karina", "last": "Gould", "name": "Karina Gould", "riding": "Burlington", "prov": "Ontario"}, {"id": "123653", "first": "Wade", "last": "Grant", "name": "Wade Grant", "riding": "Vancouver Quadra", "prov": "British Columbia"}, {"id": "123665", "first": "Will", "last": "Greaves", "name": "Will Greaves", "riding": "Victoria", "prov": "British Columbia"}, {"id": "122615", "first": "Claude", "last": "Guay", "name": "Claude Guay", "riding": "LaSalle—Émard—Verdun", "prov": "Quebec"}, {"id": "122492", "first": "Mandy", "last": "Gull-Masty", "name": "Mandy Gull-Masty", "riding": "Abitibi—Baie-James—Nunavik—Eeyou", "prov": "Quebec"}, {"id": "88984", "first": "Patty", "last": "Hajdu", "name": "Patty Hajdu", "riding": "Thunder Bay—Superior North", "prov": "Ontario"}, {"id": "111109", "first": "Brendan", "last": "Hanley", "name": "Brendan Hanley", "riding": "Yukon", "prov": "Yukon"}, {"id": "123133", "first": "Emma", "last": "Harrison", "name": "Emma Harrison", "riding": "Peterborough", "prov": "Ontario"}, {"id": "110446", "first": "Lisa", "last": "Hepfner", "name": "Lisa Hepfner", "riding": "Hamilton Mountain", "prov": "Ontario"}, {"id": "122419", "first": "Alana", "last": "Hirtle", "name": "Alana Hirtle", "riding": "Cumberland—Colchester", "prov": "Nova Scotia"}, {"id": "123019", "first": "Tim", "last": "Hodgson", "name": "Tim Hodgson", "riding": "Markham—Thornhill", "prov": "Ontario"}, {"id": "123382", "first": "Corey", "last": "Hogan", "name": "Corey Hogan", "riding": "Calgary Confederation", "prov": "Alberta"}, {"id": "88558", "first": "Anthony", "last": "Housefather", "name": "Anthony Housefather", "riding": "Mount Royal", "prov": "Quebec"}, {"id": "89020", "first": "Ahmed", "last": "Hussen", "name": "Ahmed Hussen", "riding": "York South—Weston—Etobicoke", "prov": "Ontario"}, {"id": "71337", "first": "Angelo", "last": "Iacono", "name": "Angelo Iacono", "riding": "Alfred-Pellan", "prov": "Quebec"}, {"id": "111116", "first": "Lori", "last": "Idlout", "name": "Lori Idlout", "riding": "Nunavut", "prov": "Nunavut"}, {"id": "105229", "first": "Helena", "last": "Jaczek", "name": "Helena Jaczek", "riding": "Markham—Stouffville", "prov": "Ontario"}, {"id": "89167", "first": "Matt", "last": "Jeneroux", "name": "Matt Jeneroux", "riding": "Edmonton Riverbend", "prov": "Alberta"}, {"id": "88384", "first": "Mélanie", "last": "Joly", "name": "Mélanie Joly", "riding": "Ahuntsic-Cartierville", "prov": "Quebec"}, {"id": "122646", "first": "Natilien", "last": "Joseph", "name": "Natilien Joseph", "riding": "Longueuil—Saint-Hubert", "prov": "Quebec"}, {"id": "110502", "first": "Arielle", "last": "Kayabaga", "name": "Arielle Kayabaga", "riding": "London West", "prov": "Ontario"}, {"id": "104531", "first": "Mike", "last": "Kelloway", "name": "Mike Kelloway", "riding": "Sydney—Glace Bay", "prov": "Nova Scotia"}, {"id": "88849", "first": "Iqra", "last": "Khalid", "name": "Iqra Khalid", "riding": "Mississauga—Erin Mills", "prov": "Ontario"}, {"id": "123625", "first": "Ernie", "last": "Klassen", "name": "Ernie Klassen", "riding": "South Surrey—White Rock", "prov": "British Columbia"}, {"id": "105009", "first": "Annie", "last": "Koutrakis", "name": "Annie Koutrakis", "riding": "Vimy", "prov": "Quebec"}, {"id": "92209", "first": "Marie-France", "last": "Lalonde", "name": "Marie-France Lalonde", "riding": "Orléans", "prov": "Ontario"}, {"id": "96350", "first": "Emmanuella", "last": "Lambropoulos", "name": "Emmanuella Lambropoulos", "riding": "Saint-Laurent", "prov": "Quebec"}, {"id": "30552", "first": "Kevin", "last": "Lamoureux", "name": "Kevin Lamoureux", "riding": "Winnipeg North", "prov": "Manitoba"}, {"id": "88601", "first": "Linda", "last": "Lapointe", "name": "Linda Lapointe", "riding": "Rivière-des-Mille-Îles", "prov": "Quebec"}, {"id": "110663", "first": "Viviane", "last": "Lapointe", "name": "Viviane Lapointe", "riding": "Sudbury", "prov": "Ontario"}, {"id": "104957", "first": "Patricia", "last": "Lattanzio", "name": "Patricia Lattanzio", "riding": "Saint-Léonard—Saint-Michel", "prov": "Quebec"}, {"id": "88394", "first": "Stéphane", "last": "Lauzon", "name": "Stéphane Lauzon", "riding": "Argenteuil—Papineau—Des Collines", "prov": "Quebec"}, {"id": "123305", "first": "Ginette", "last": "Lavack", "name": "Ginette Lavack", "riding": "St. Boniface—St. Vital", "prov": "Manitoba"}, {"id": "122518", "first": "Steeve", "last": "Lavoie", "name": "Steeve Lavoie", "riding": "Beauport—Limoilou", "prov": "Quebec"}, {"id": "1813", "first": "Dominic", "last": "LeBlanc", "name": "Dominic LeBlanc", "riding": "Beauséjour", "prov": "New Brunswick"}, {"id": "122656", "first": "Carlos", "last": "Leitão", "name": "Carlos Leitão", "riding": "Marc-Aurèle-Fortin", "prov": "Quebec"}, {"id": "88532", "first": "Joël", "last": "Lightbound", "name": "Joël Lightbound", "riding": "Louis-Hébert", "prov": "Quebec"}, {"id": "88368", "first": "Wayne", "last": "Long", "name": "Wayne Long", "riding": "Saint John—Kennebecasis", "prov": "New Brunswick"}, {"id": "88810", "first": "Tim", "last": "Louis", "name": "Tim Louis", "riding": "Kitchener—Conestoga", "prov": "Ontario"}, {"id": "105088", "first": "Michael", "last": "Ma", "name": "Michael Ma", "riding": "Markham—Unionville", "prov": "Ontario"}, {"id": "109891", "first": "Heath", "last": "MacDonald", "name": "Heath MacDonald", "riding": "Malpeque", "prov": "Prince Edward Island"}, {"id": "122394", "first": "Kent", "last": "MacDonald", "name": "Kent MacDonald", "riding": "Cardigan", "prov": "Prince Edward Island"}, {"id": "88468", "first": "Steven", "last": "MacKinnon", "name": "Steven MacKinnon", "riding": "Gatineau", "prov": "Quebec"}, {"id": "122788", "first": "Chris", "last": "Malette", "name": "Chris Malette", "riding": "Bay of Quinte", "prov": "Ontario"}, {"id": "88748", "first": "James", "last": "Maloney", "name": "James Maloney", "riding": "Etobicoke—Lakeshore", "prov": "Ontario"}, {"id": "90964", "first": "Danielle", "last": "Martin", "name": "Danielle Martin", "riding": "University—Rosedale", "prov": "Ontario"}, {"id": "9486", "first": "David", "last": "McGuinty", "name": "David McGuinty", "riding": "Ottawa South", "prov": "Ontario"}, {"id": "122773", "first": "Jennifer", "last": "McKelvie", "name": "Jennifer McKelvie", "riding": "Ajax", "prov": "Ontario"}, {"id": "59293", "first": "Ron", "last": "McKinnon", "name": "Ron McKinnon", "riding": "Coquitlam—Port Coquitlam", "prov": "British Columbia"}, {"id": "123556", "first": "Jill", "last": "McKnight", "name": "Jill McKnight", "riding": "Delta", "prov": "British Columbia"}, {"id": "123563", "first": "Stephanie", "last": "McLean", "name": "Stephanie McLean", "riding": "Esquimalt—Saanich—Sooke", "prov": "British Columbia"}, {"id": "122587", "first": "Marie-Gabrielle", "last": "Ménard", "name": "Marie-Gabrielle Ménard", "riding": "Hochelaga—Rosemont-Est", "prov": "Quebec"}, {"id": "58621", "first": "Alexandra", "last": "Mendès", "name": "Alexandra Mendès", "riding": "Brossard—Saint-Lambert", "prov": "Quebec"}, {"id": "122684", "first": "Marjorie", "last": "Michel", "name": "Marjorie Michel", "riding": "Papineau", "prov": "Quebec"}, {"id": "122428", "first": "Shannon", "last": "Miedema", "name": "Shannon Miedema", "riding": "Halifax", "prov": "Nova Scotia"}, {"id": "88660", "first": "Marc", "last": "Miller", "name": "Marc Miller", "riding": "Ville-Marie—Le Sud-Ouest—Île-des-Soeurs", "prov": "Quebec"}, {"id": "123144", "first": "Giovanna", "last": "Mingarelli", "name": "Giovanna Mingarelli", "riding": "Prescott—Russell—Cumberland", "prov": "Ontario"}, {"id": "88308", "first": "Robert", "last": "Morrissey", "name": "Robert Morrissey", "riding": "Egmont", "prov": "Prince Edward Island"}, {"id": "122462", "first": "David", "last": "Myles", "name": "David Myles", "riding": "Fredericton—Oromocto", "prov": "New Brunswick"}, {"id": "110572", "first": "Yasir", "last": "Naqvi", "name": "Yasir Naqvi", "riding": "Ottawa Centre", "prov": "Ontario"}, {"id": "123141", "first": "Juanita", "last": "Nathan", "name": "Juanita Nathan", "riding": "Pickering—Brooklin", "prov": "Ontario"}, {"id": "123192", "first": "Chi", "last": "Nguyen", "name": "Chi Nguyen", "riding": "Spadina—Harbourfront", "prov": "Ontario"}, {"id": "72023", "first": "Taleeb", "last": "Noormohamed", "name": "Taleeb Noormohamed", "riding": "Vancouver Granville", "prov": "British Columbia"}, {"id": "122668", "first": "Bienvenu-Olivier", "last": "Ntumba", "name": "Bienvenu-Olivier Ntumba", "riding": "Mont-Saint-Bruno—L'Acadie", "prov": "Quebec"}, {"id": "122933", "first": "Dominique", "last": "O'Rourke", "name": "Dominique O'Rourke", "riding": "Guelph", "prov": "Ontario"}, {"id": "58858", "first": "Robert", "last": "Oliphant", "name": "Robert Oliphant", "riding": "Don Valley West", "prov": "Ontario"}, {"id": "89171", "first": "Eleanor", "last": "Olszewski", "name": "Eleanor Olszewski", "riding": "Edmonton Centre", "prov": "Alberta"}, {"id": "122375", "first": "Tom", "last": "Osborne", "name": "Tom Osborne", "riding": "Cape Spear—Mount Pearl—Paradise", "prov": "Newfoundland and Labrador"}, {"id": "88364", "first": "Ginette", "last": "Petitpas Taylor", "name": "Ginette Petitpas Taylor", "riding": "Moncton—Dieppe", "prov": "New Brunswick"}, {"id": "105437", "first": "Marcus", "last": "Powlowski", "name": "Marcus Powlowski", "riding": "Thunder Bay—Rainy River", "prov": "Ontario"}, {"id": "122552", "first": "Nathalie", "last": "Provost", "name": "Nathalie Provost", "riding": "Châteauguay—Les Jardins-de-Napierville", "prov": "Quebec"}, {"id": "122606", "first": "Jacques", "last": "Ramsay", "name": "Jacques Ramsay", "riding": "La Prairie—Atateken", "prov": "Quebec"}, {"id": "122946", "first": "Aslam", "last": "Rana", "name": "Aslam Rana", "riding": "Hamilton Centre", "prov": "Ontario"}, {"id": "123644", "first": "Gregor", "last": "Robertson", "name": "Gregor Robertson", "riding": "Vancouver Fraserview—South Burnaby", "prov": "British Columbia"}, {"id": "123081", "first": "Pauline", "last": "Rochefort", "name": "Pauline Rochefort", "riding": "Nipissing—Timiskaming", "prov": "Ontario"}, {"id": "88521", "first": "Sherry", "last": "Romanado", "name": "Sherry Romanado", "riding": "Longueuil—Charles-LeMoyne—Greenfield Park", "prov": "Quebec"}, {"id": "59294", "first": "Zoe", "last": "Royer", "name": "Zoe Royer", "riding": "Port Moody—Coquitlam", "prov": "British Columbia"}, {"id": "88698", "first": "Ruby", "last": "Sahota", "name": "Ruby Sahota", "riding": "Brampton North—Caledon", "prov": "Ontario"}, {"id": "1422", "first": "Gurbux", "last": "Saini", "name": "Gurbux Saini", "riding": "Fleetwood—Port Kells", "prov": "British Columbia"}, {"id": "89339", "first": "Randeep", "last": "Sarai", "name": "Randeep Sarai", "riding": "Surrey Centre", "prov": "British Columbia"}, {"id": "122533", "first": "Abdelhaq", "last": "Sari", "name": "Abdelhaq Sari", "riding": "Bourassa", "prov": "Quebec"}, {"id": "123583", "first": "Jake", "last": "Sawatzky", "name": "Jake Sawatzky", "riding": "New Westminster—Burnaby—Maillardville", "prov": "British Columbia"}, {"id": "25453", "first": "Francis", "last": "Scarpaleggia", "name": "Francis Scarpaleggia", "riding": "Lac-Saint-Louis", "prov": "Quebec"}, {"id": "88649", "first": "Peter", "last": "Schiefke", "name": "Peter Schiefke", "riding": "Vaudreuil", "prov": "Quebec"}, {"id": "1787", "first": "Judy A.", "last": "Sgro", "name": "Judy A. Sgro", "riding": "Humber River—Black Creek", "prov": "Ontario"}, {"id": "142763", "first": "Tanveer", "last": "Shahnawaz", "name": "Tanveer Shahnawaz", "riding": "Beaches—East York", "prov": "Ontario"}, {"id": "88944", "first": "Terry", "last": "Sheehan", "name": "Terry Sheehan", "riding": "Sault Ste. Marie—Algoma", "prov": "Ontario"}, {"id": "105045", "first": "Maninder", "last": "Sidhu", "name": "Maninder Sidhu", "riding": "Brampton East", "prov": "Ontario"}, {"id": "88703", "first": "Sonia", "last": "Sidhu", "name": "Sonia Sidhu", "riding": "Brampton South", "prov": "Ontario"}, {"id": "122801", "first": "Amandeep", "last": "Sodhi", "name": "Amandeep Sodhi", "riding": "Brampton Centre", "prov": "Ontario"}, {"id": "123229", "first": "Evan", "last": "Solomon", "name": "Evan Solomon", "riding": "Toronto Centre", "prov": "Ontario"}, {"id": "114349", "first": "Charles", "last": "Sousa", "name": "Charles Sousa", "riding": "Mississauga—Lakeshore", "prov": "Ontario"}, {"id": "122589", "first": "Eric", "last": "St-Pierre", "name": "Eric St-Pierre", "riding": "Honoré-Mercier", "prov": "Quebec"}, {"id": "110459", "first": "Jenna", "last": "Sudds", "name": "Jenna Sudds", "riding": "Kanata", "prov": "Ontario"}, {"id": "123027", "first": "Kristina", "last": "Tesser Derksen", "name": "Kristina Tesser Derksen", "riding": "Milton East—Halton Hills South", "prov": "Ontario"}, {"id": "109877", "first": "Joanne", "last": "Thompson", "name": "Joanne Thompson", "riding": "St. John's East", "prov": "Newfoundland and Labrador"}, {"id": "105480", "first": "Ryan", "last": "Turnbull", "name": "Ryan Turnbull", "riding": "Whitby", "prov": "Ontario"}, {"id": "110538", "first": "Rechie", "last": "Valdez", "name": "Rechie Valdez", "riding": "Mississauga—Streetsville", "prov": "Ontario"}, {"id": "105242", "first": "Adam", "last": "van Koeverden", "name": "Adam van Koeverden", "riding": "Burlington North—Milton West", "prov": "Ontario"}, {"id": "71738", "first": "Anita", "last": "Vandenbeld", "name": "Anita Vandenbeld", "riding": "Ottawa West—Nepean", "prov": "Ontario"}, {"id": "122539", "first": "Louis", "last": "Villeneuve", "name": "Louis Villeneuve", "riding": "Brome—Missisquoi", "prov": "Quebec"}, {"id": "122637", "first": "Tim", "last": "Watchorn", "name": "Tim Watchorn", "riding": "Les Pays-d'en-Haut", "prov": "Quebec"}, {"id": "105918", "first": "Patrick", "last": "Weiler", "name": "Patrick Weiler", "riding": "West Vancouver—Sunshine Coast—Sea to Sky Country", "prov": "British Columbia"}, {"id": "98747", "first": "Jean", "last": "Yip", "name": "Jean Yip", "riding": "Scarborough—Agincourt", "prov": "Ontario"}, {"id": "88950", "first": "Salma", "last": "Zahid", "name": "Salma Zahid", "riding": "Scarborough Centre—Don Valley East", "prov": "Ontario"}, {"id": "122925", "first": "John", "last": "Zerucelli", "name": "John Zerucelli", "riding": "Etobicoke North", "prov": "Ontario"}, {"id": "54157", "first": "Sameer", "last": "Zuberi", "name": "Sameer Zuberi", "riding": "Pierrefonds—Dollard", "prov": "Quebec"}, {"id": "110454", "first": "Shelby", "last": "Kramp-Neuman", "name": "Shelby Kramp-Neuman", "riding": "Hastings—Lennox and Addington—Tyendinaga", "prov": "Ontario"}, {"id": "116022", "first": "Shuvaloy", "last": "Majumdar", "name": "Shuvaloy Majumdar", "riding": "Calgary Heritage", "prov": "Alberta"}], "video": ["123092", "110339", "123675", "122753", "111067", "89236", "110791", "104977", "142764", "115744", "89000", "89464", "110225", "122756", "122899", "119705", "49344", "122473", "31098", "109915", "89408", "122443", "88323", "96356", "122911", "88938", "107294", "123665", "111109", "110446", "122419", "123625", "105009", "110454", "92209", "30552", "110663", "123305", "122518", "122656", "105088", "88468", "116022", "122788", "88748", "90964", "9486", "122773", "123556", "88660", "123144", "122587", "110572", "123192", "122668", "122933", "89171", "122375", "105437", "122606", "123081", "88521", "59294", "88698", "89339", "122533", "123583", "1787", "88703", "122801", "114349", "110459", "110538", "71738", "122539", "88950"]};
+const MPS = DATA.mps;
+const BY_ID = Object.fromEntries(MPS.map(m => [m.id, m]));
+const VIDEO = new Set(DATA.video);
+const LESSON_SIZE = 10;
+const MAX_BOX = 5;
+const INTERVALS = [0, 10*60e3, 864e5, 3*864e5, 7*864e5, 21*864e5]; // by box
+const MASTERED_BOX = 4;
+const LEVELS = [
+  {n:1, title:'Face → name', desc:'See the portrait, pick the name.', kinds:['fn']},
+  {n:2, title:'Face → riding', desc:'See the portrait, pick the riding.', kinds:['fr']},
+  {n:3, title:'Name ↔ riding', desc:'No photo. Match names and ridings both ways.', kinds:['nr','rn']},
+];
+const PROV_ABBR = {'Alberta':'AB','British Columbia':'BC','Manitoba':'MB','New Brunswick':'NB','Newfoundland and Labrador':'NL','Northwest Territories':'NT','Nova Scotia':'NS','Nunavut':'NU','Ontario':'ON','Prince Edward Island':'PE','Quebec':'QC','Saskatchewan':'SK','Yukon':'YT'};
+
+/* ---------- storage ---------- */
+const KEY = 'mpQuiz.v1';
+function freshState(){ return {xp:0, streak:0, lastDay:null, cards:{}, best:{}, deck:'all', unlockAll:false, sound:true}; }
+let S;
+try { S = Object.assign(freshState(), JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e){ S = freshState(); }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+function dayStr(d){ return d.toLocaleDateString('en-CA'); }
+function liveStreak(){
+  if (!S.lastDay) return 0;
+  const today = dayStr(new Date()), y = dayStr(new Date(Date.now()-864e5));
+  return (S.lastDay === today || S.lastDay === y) ? S.streak : 0;
+}
+function bumpStreak(){
+  const today = dayStr(new Date()), y = dayStr(new Date(Date.now()-864e5));
+  if (S.lastDay === today) return;
+  S.streak = (S.lastDay === y) ? S.streak + 1 : 1;
+  S.lastDay = today;
+}
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const photo = id => `photos/${id}.jpg`;
+const show = id => ['home','lesson','results','study'].forEach(x => $(x).classList.toggle('hidden', x!==id));
+
+function deckIds(deck){
+  if (deck === 'all') return MPS.map(m=>m.id);
+  if (deck === 'video') return MPS.filter(m=>VIDEO.has(m.id)).map(m=>m.id);
+  return MPS.filter(m=>m.prov===deck).map(m=>m.id);
+}
+function deckLabel(deck){
+  if (deck === 'all') return 'All Liberal MPs';
+  if (deck === 'video') return "This video's MPs";
+  return deck;
+}
+function cardsFor(level, ids){
+  return LEVELS[level-1].kinds.flatMap(k => ids.map(id => ({key:`${k}:${id}`, kind:k, id})));
+}
+const box = key => (S.cards[key] && S.cards[key].box) || 0;
+function levelProgress(level, ids){
+  const cs = cardsFor(level, ids);
+  const m = cs.filter(c => box(c.key) >= MASTERED_BOX).length;
+  const seen = cs.filter(c => S.cards[c.key]).length;
+  return {total:cs.length, mastered:m, seen};
+}
+function unlocked(level){
+  if (S.unlockAll || level === 1) return true;
+  return (S.best[level-1] || 0) >= 80;
+}
+
+/* ---------- sound ---------- */
+let AC;
+function beep(ok){
+  if (!S.sound) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = ok ? [660, 880] : [220, 180];
+    notes.forEach((f,i) => {
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = ok ? 'triangle' : 'sawtooth'; o.frequency.value = f;
+      const t = AC.currentTime + i*0.09;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(ok?0.18:0.08, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+0.16);
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t+0.18);
+    });
+  } catch(e){}
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const ids = deckIds(S.deck);
+  const sel = $('deck');
+  if (!sel.options.length){
+    const provs = [...new Set(MPS.map(m=>m.prov))].sort();
+    const opt = (v,l) => `<option value="${esc(v)}">${esc(l)}</option>`;
+    sel.innerHTML = opt('all', `All Liberal MPs (${MPS.length})`)
+      + opt('video', `This video's MPs (${VIDEO.size})`)
+      + `<optgroup label="By province">` + provs.map(p => opt(p, `${p} (${deckIds(p).length})`)).join('') + `</optgroup>`;
+  }
+  sel.value = S.deck;
+  $('deckCount').textContent = `${deckLabel(S.deck)} · ${ids.length} MPs`;
+  $('sStreak').textContent = liveStreak();
+  $('sXp').textContent = S.xp;
+  $('sMast').textContent = LEVELS.reduce((a,L)=>a+levelProgress(L.n, ids).mastered, 0);
+  $('soundBtn').textContent = S.sound ? '🔊' : '🔇';
+  $('unlockAll').checked = S.unlockAll;
+  $('levels').innerHTML = LEVELS.map(L => {
+    const p = levelProgress(L.n, ids), ok = unlocked(L.n);
+    const pct = p.total ? Math.round(100*p.mastered/p.total) : 0;
+    const status = ok
+      ? `${p.mastered} of ${p.total} mastered · ${p.seen} seen`
+      : `Locked · score 80% in Level ${L.n-1} to open`;
+    return `<button class="level" data-level="${L.n}" ${ok?'':'disabled'}>
+      <span class="num">${L.n}</span>
+      <span style="flex:1;min-width:0"><div class="t">${L.title}</div><div class="d">${L.desc}</div>
+      <div class="d" style="margin-top:4px">${status}</div>
+      <div class="meter"><i style="width:${pct}%"></i></div></span>
+      ${ok?'':'<span class="lock">🔒</span>'}</button>`;
+  }).join('');
+  document.querySelectorAll('.level').forEach(b => b.onclick = () => startLesson(+b.dataset.level));
+  show('home');
+}
+$('deck').onchange = e => { S.deck = e.target.value; save(); renderHome(); };
+$('unlockAll').onchange = e => { S.unlockAll = e.target.checked; save(); renderHome(); };
+$('soundBtn').onclick = () => { S.sound = !S.sound; save(); renderHome(); };
+$('resetBtn').onclick = () => {
+  if (confirm('Erase all XP, streak and card progress?')) { const keepSound = S.sound; S = freshState(); S.sound = keepSound; save(); renderHome(); }
+};
+$('studyBtn').onclick = renderStudy;
+
+/* ---------- lesson ---------- */
+let L = null;
+
+function pickCards(level, ids){
+  const now = Date.now();
+  const all = cardsFor(level, ids);
+  const due = shuffle(all.filter(c => S.cards[c.key] && S.cards[c.key].due <= now))
+    .sort((a,b) => box(a.key) - box(b.key));
+  const fresh = shuffle(all.filter(c => !S.cards[c.key]));
+  const later = all.filter(c => S.cards[c.key] && S.cards[c.key].due > now)
+    .sort((a,b) => S.cards[a.key].due - S.cards[b.key].due);
+  const size = Math.min(LESSON_SIZE, all.length);
+  // mostly review what's due, but always mix in a few new faces
+  const nNew = Math.min(fresh.length, Math.max(3, size - due.length));
+  // one card per MP per lesson where possible, so level 3's two directions don't give each other away
+  const out = [], people = new Set();
+  const add = (c, unique) => { if (out.length < size && !out.includes(c) && !(unique && people.has(c.id))) { out.push(c); people.add(c.id); } };
+  for (const unique of [true, false]) {
+    due.slice(0, size - nNew).forEach(c => add(c, unique));
+    fresh.slice(0, nNew).forEach(c => add(c, unique));
+    for (const pool of [due, fresh, later]) pool.forEach(c => add(c, unique));
+  }
+  return shuffle(out);
+}
+
+function makeQuestion(card){
+  const mp = BY_ID[card.id];
+  const field = (card.kind === 'fn' || card.kind === 'rn') ? 'name' : 'riding';
+  const answer = mp[field];
+  const others = MPS.filter(m => m.id !== mp.id);
+  const same = shuffle(others.filter(m => m.prov === mp.prov));
+  const rest = shuffle(others.filter(m => m.prov !== mp.prov));
+  const opts = [answer];
+  for (const m of same.concat(rest)) { if (opts.length >= 4) break; if (!opts.includes(m[field])) opts.push(m[field]); }
+  return {card, mp, field, answer, options: shuffle(opts)};
+}
+
+function startLesson(level){
+  const ids = deckIds(S.deck);
+  const queue = pickCards(level, ids);
+  if (!queue.length) return;
+  L = {level, queue, total: queue.length, done: 0, firstTry: {}, correctFirst: 0, combo: 0, bestCombo: 0, xp: 0, missed: [], q: null, answered: false, picked: null};
+  show('lesson');
+  nextQuestion();
+}
+
+function nextQuestion(){
+  if (!L.queue.length) return finishLesson();
+  L.q = makeQuestion(L.queue[0]);
+  L.answered = false; L.picked = null;
+  const {card, mp, options} = L.q;
+  const isNew = !S.cards[card.key];
+  let head, body;
+  if (card.kind === 'fn'){ head = 'Who is this?'; body = `<div class="card"><img class="photo" src="${photo(mp.id)}" alt=""></div>`; }
+  else if (card.kind === 'fr'){ head = 'Which riding does this MP represent?'; body = `<div class="card"><img class="photo" src="${photo(mp.id)}" alt=""></div>`; }
+  else if (card.kind === 'nr'){ head = 'Which riding?'; body = `<div class="card"><div class="bigtext"><div class="main">${esc(mp.name)}</div></div></div>`; }
+  else { head = 'Who is the MP for this riding?'; body = `<div class="card"><div class="bigtext"><div class="main">${esc(mp.riding)}</div><div class="prov">${esc(mp.prov)}</div></div></div>`; }
+  $('q').innerHTML = `${isNew ? '<div class="tag">✦ New card</div>' : ''}
+    <p class="prompt">${head}</p>${body}
+    <div class="opts">${options.map((o,i) => `<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+  document.querySelectorAll('.opt').forEach(b => b.onclick = () => pick(+b.dataset.i));
+  $('bar').style.width = `${100*L.done/L.total}%`;
+  $('combo').textContent = L.combo >= 2 ? `🔥 ${L.combo}` : '';
+  const foot = $('foot'); foot.className = 'foot'; $('fb').innerHTML = '';
+  $('footBtn').textContent = 'Check'; $('footBtn').className = 'btn'; $('footBtn').disabled = true;
+}
+
+function pick(i){
+  if (L.answered) return;
+  L.picked = i;
+  document.querySelectorAll('.opt').forEach(b => b.classList.toggle('picked', +b.dataset.i === i));
+  $('footBtn').disabled = false;
+}
+
+function check(){
+  const {card, mp, answer, options} = L.q;
+  const ok = options[L.picked] === answer;
+  L.answered = true;
+  const first = !(card.key in L.firstTry);
+  if (first) L.firstTry[card.key] = ok;
+
+  // spaced repetition: only the first try in a lesson moves the card between boxes
+  const st = S.cards[card.key] || {box:0, due:0, right:0, wrong:0};
+  if (first){
+    if (ok){ st.box = Math.min(st.box + 1, MAX_BOX); st.right++; }
+    else { st.box = 0; st.wrong++; }
+    st.due = Date.now() + INTERVALS[st.box];
+    S.cards[card.key] = st;
+  }
+
+  L.queue.shift();
+  if (ok){
+    L.done++; L.combo++; L.bestCombo = Math.max(L.bestCombo, L.combo);
+    if (first) L.correctFirst++;
+    let gain = first ? 10 : 5;
+    if (L.combo > 0 && L.combo % 5 === 0) gain += 5;
+    L.xp += gain;
+  } else {
+    L.combo = 0;
+    if (!L.missed.includes(mp.id)) L.missed.push(mp.id);
+    // missed card comes back a few questions later in this lesson
+    L.queue.splice(Math.min(3, L.queue.length), 0, card);
+  }
+  save();
+  beep(ok);
+
+  document.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true; b.classList.remove('picked');
+    const v = options[+b.dataset.i];
+    if (v === answer) b.classList.add('right');
+    else if (+b.dataset.i === L.picked) b.classList.add('wrong', 'shake');
+  });
+  $('bar').style.width = `${100*L.done/L.total}%`;
+  $('combo').textContent = L.combo >= 2 ? `🔥 ${L.combo}` : '';
+
+  const cheers = ['Nice!','Great job!','Correct!','You got it!','Excellent!'];
+  $('foot').className = 'foot ' + (ok ? 'ok' : 'bad');
+  $('fb').innerHTML = `<img src="${photo(mp.id)}" alt="">
+    <div><div class="h">${ok ? cheers[Math.floor(Math.random()*cheers.length)] : 'Correct answer:'}</div>
+    <div class="ans">${esc(mp.name)} · ${esc(mp.riding)} (${PROV_ABBR[mp.prov]||esc(mp.prov)})</div></div>`;
+  $('footBtn').textContent = 'Continue';
+  $('footBtn').className = 'btn' + (ok ? '' : ' red');
+  $('footBtn').classList.add('pop');
+}
+
+$('footBtn').onclick = () => {
+  if (!L) return;
+  if (!L.answered){ if (L.picked !== null) check(); }
+  else nextQuestion();
+};
+$('quitBtn').onclick = () => { if (confirm('Quit this lesson? Answers so far are saved.')) { L = null; $('foot').classList.add('hidden'); renderHome(); } };
+
+document.addEventListener('keydown', e => {
+  if ($('lesson').classList.contains('hidden') || !L) return;
+  if (!L.answered && e.key >= '1' && e.key <= '4'){ const i = +e.key - 1; if (i < L.q.options.length) { pick(i); } }
+  if (e.key === 'Enter'){ e.preventDefault(); $('footBtn').click(); }
+});
+
+function finishLesson(){
+  $('foot').classList.add('hidden');
+  const acc = Math.round(100 * L.correctFirst / L.total);
+  if (acc === 100) L.xp += 10;
+  S.xp += L.xp;
+  S.best[L.level] = Math.max(S.best[L.level] || 0, acc);
+  bumpStreak();
+  save();
+  const unlockedNow = L.level < 3 && acc >= 80 && !S.unlockAll;
+  const lvl = L.level;
+  $('results').innerHTML = `<div class="done">
+    <div class="big">${acc === 100 ? '🏆' : acc >= 80 ? '🎉' : '💪'}</div>
+    <h1>${acc === 100 ? 'Perfect lesson!' : 'Lesson complete!'}</h1>
+    <p class="sub">${deckLabel(S.deck)} · Level ${lvl}${unlockedNow ? ` · Level ${lvl+1} is open` : ''}</p>
+    <div class="tiles">
+      <div class="tile"><div class="l">Total XP</div><div class="v">⚡ ${L.xp}</div></div>
+      <div class="tile g"><div class="l">Accuracy</div><div class="v">🎯 ${acc}%</div></div>
+      <div class="tile b"><div class="l">Streak</div><div class="v">🔥 ${S.streak}</div></div>
+    </div>
+    ${L.missed.length ? `<h2>Review these</h2><div class="review">${L.missed.map(id => { const m = BY_ID[id]; return `<div class="rv"><img src="${photo(id)}" alt=""><div><div class="n">${esc(m.name)}</div><div class="r">${esc(m.riding)} · ${esc(m.prov)}</div></div></div>`; }).join('')}</div>` : ''}
+    <div style="display:grid;gap:12px;margin-top:28px">
+      <button class="btn" id="againBtn">Next lesson</button>
+      <button class="btn blue" id="homeBtn">Back to levels</button>
+    </div></div>`;
+  $('againBtn').onclick = () => startLesson(lvl);
+  $('homeBtn').onclick = renderHome;
+  L = null;
+  show('results');
+}
+
+/* ---------- study grid ---------- */
+function renderStudy(){
+  const ids = deckIds(S.deck);
+  const label = id => {
+    const b = Math.min(...LEVELS.flatMap(Lv => Lv.kinds.map(k => box(`${k}:${id}`))));
+    const seen = LEVELS.some(Lv => Lv.kinds.some(k => S.cards[`${k}:${id}`]));
+    if (b >= MASTERED_BOX) return '<div class="s" style="color:var(--blue)">Mastered</div>';
+    return seen ? '<div class="s" style="color:var(--orange)">Learning</div>' : '<div class="s" style="color:var(--muted)">New</div>';
+  };
+  const sorted = ids.map(id => BY_ID[id]).sort((a,b) => a.last.localeCompare(b.last, 'fr'));
+  $('study').innerHTML = `<div class="lessontop"><button class="close" id="studyClose" title="Back">✕</button>
+    <div style="font-weight:900;font-size:20px">${deckLabel(S.deck)} · ${ids.length}</div></div>
+    <div class="grid">${sorted.map(m => `<div class="gcard"><img src="${photo(m.id)}" alt="" loading="lazy">
+      <div class="n">${esc(m.name)}</div><div class="r">${esc(m.riding)} · ${PROV_ABBR[m.prov]||esc(m.prov)}</div>${label(m.id)}</div>`).join('')}</div>`;
+  $('studyClose').onclick = renderHome;
+  show('study');
+  window.scrollTo(0,0);
+}
+
+renderHome();
+</script>
+</body>
+</html>
