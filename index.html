@@ -344,6 +344,8 @@ function startLesson(level){
   const ids = deckIds(S.deck);
   const queue = pickCards(level, ids);
   if (!queue.length) return;
+  // fetch the lesson's photos up front so they don't pop in on slow phone connections
+  queue.forEach(c => { new Image().src = photo(c.id); });
   L = {level, queue, total: queue.length, done: 0, firstTry: {}, correctFirst: 0, combo: 0, bestCombo: 0, xp: 0, missed: [], q: null, answered: false, picked: null};
   show('lesson');
   nextQuestion();
