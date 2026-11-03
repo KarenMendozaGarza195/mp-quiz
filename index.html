@@ -2,168 +2,186 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MP Quiz">
+<meta name="theme-color" content="#ffffff">
 <title>Know Your MPs</title>
 <style>
 :root{
-  --bg:#ffffff; --surface:#f7f7f7; --text:#3c3c3c; --muted:#777; --line:#e5e5e5;
-  --green:#58cc02; --green-dark:#46a302; --green-soft:#d7ffb8; --green-text:#58a700;
-  --red:#ff4b4b; --red-dark:#ea2b2b; --red-soft:#ffdfe0; --red-text:#ea2b2b;
-  --blue:#1cb0f6; --blue-dark:#1899d6; --blue-soft:#ddf4ff;
-  --gold:#ffc800; --orange:#ff9600;
-  --opt-bg:#fff; --opt-shadow:#e5e5e5;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#131f24; --surface:#1d2c33; --text:#f1f7fb; --muted:#93a3ab; --line:#37464f;
-    --green-soft:#1f3a14; --green-text:#79d634; --red-soft:#3d1f22; --red-text:#ff7878;
-    --blue-soft:#14313f; --opt-bg:#131f24; --opt-shadow:#37464f;
-  }
+  --red:#d0242b; --red-dark:#a91c22; --red-bg:#fdecee; --red-line:#f1b9be;
+  --ink:#1c1c1e; --ink2:#5f6368; --ink3:#8a8a90; --bg:#f2f2f7; --card:#fff; --line:#e3e3e8;
+  --navy:#1f2a37; --navy2:#283646; --navy-track:#34445a; --navy-text:#c3ccd6; --coral:#ff6b7c;
+  --green:#1b7f3b; --green-bg:#e6f4ea; --green-line:#9fd3ae;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 "Nunito","Segoe UI",system-ui,-apple-system,sans-serif}
-button{font:inherit;color:inherit;cursor:pointer}
-.wrap{max-width:640px;margin:0 auto;padding:16px 16px 140px}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hidden{display:none!important}
+.page{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:150px}
 
-/* top stats */
-.stats{display:flex;gap:18px;align-items:center;justify-content:flex-end;font-weight:800;padding:4px 0 16px}
-.stat{display:flex;align-items:center;gap:6px}
-.stat .ic{font-size:20px}
-.stat.streak{color:var(--orange)} .stat.xp{color:var(--gold)} .stat.mast{color:var(--blue)}
-.iconbtn{background:none;border:0;font-size:20px;padding:4px;opacity:.75}
-.iconbtn:hover{opacity:1}
+/* app header */
+.hdr{position:sticky;top:0;z-index:5;background:#fff;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;border-bottom:1px solid #e9e9ee}
+.hdr .tt{flex:1;min-width:0}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.18em;color:var(--red);text-transform:uppercase}
+.big{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.circ{width:44px;height:44px;border-radius:50%;background:#f1f1f4;border:0;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 44px;color:var(--ink)}
+.circ svg{width:20px;height:20px}
 
-h1{font-size:28px;margin:0 0 4px;font-weight:900}
-.sub{color:var(--muted);margin:0 0 24px}
-h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:28px 0 10px;font-weight:800}
+/* deck pills */
+.filters{background:#fff;display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #e9e9ee}
+.filters::-webkit-scrollbar{display:none}
+.pill{border:2px solid var(--red);background:#fff;color:var(--red);border-radius:22px;padding:6px 14px;font-weight:600;font-size:15px;white-space:nowrap;flex:none}
+.pill.on{background:var(--red);color:#fff}
+.pill small{font-weight:500;opacity:.8;margin-left:3px}
 
-select{width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg);color:var(--text);font:inherit;font-weight:700}
+.feed{padding:14px;display:flex;flex-direction:column;gap:12px}
+.sec{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin:8px 4px -2px}
 
-.levels{display:grid;gap:12px}
-.level{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:16px;border-radius:16px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg)}
-.level:hover:not(:disabled){background:var(--surface)}
-.level:disabled{opacity:.5;cursor:not-allowed}
-.level .num{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:20px;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-dark)}
-.level:disabled .num{background:var(--line);box-shadow:0 4px 0 var(--opt-shadow)}
-.level .t{font-weight:800;font-size:17px}
-.level .d{color:var(--muted);font-size:14px}
-.meter{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:8px}
-.meter i{display:block;height:100%;background:var(--blue);border-radius:8px}
-.level .lock{margin-left:auto;font-size:20px}
+/* navy progress card */
+.drop{background:var(--navy);color:#fff;border-radius:22px;padding:14px 16px 16px}
+.drop-top{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;font-weight:800;letter-spacing:.14em;color:var(--coral);text-transform:uppercase}
+.live{width:9px;height:9px;border-radius:50%;background:var(--coral);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,107,124,.7)}70%{box-shadow:0 0 0 8px rgba(255,107,124,0)}100%{box-shadow:0 0 0 0 rgba(255,107,124,0)}}
+.drop-top .of{margin-left:auto;color:#8e9bab;letter-spacing:.06em;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.num b{display:block;font-size:26px;font-weight:800;line-height:1.1}
+.num span{font-size:13px;color:var(--navy-text)}
+.track{display:flex;gap:5px;margin-top:16px}
+.track i{flex:1;height:6px;border-radius:3px;background:var(--navy-track)}
+.track i.done{background:var(--red)}
+.streak{display:flex;justify-content:space-between;margin-top:8px;font-size:12.5px;color:var(--navy-text)}
+.streak b{color:#fff}
 
-.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:28px}
-.link{background:none;border:0;color:var(--blue);font-weight:800;padding:0;text-transform:uppercase;font-size:14px;letter-spacing:.04em}
-.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:14px}
+/* level cards */
+.fc{display:block;width:100%;text-align:left;background:#fff;border:0;border-radius:22px;padding:16px 16px 14px;position:relative}
+.fc.next{box-shadow:inset 4px 0 0 var(--red)}
+.fc:disabled{cursor:not-allowed}
+.fc:disabled .t,.fc:disabled .d{color:var(--ink3)}
+.fc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tag{background:var(--red-bg);border:1px solid var(--red-line);color:var(--red);font-weight:700;font-size:13px;border-radius:8px;padding:3px 9px}
+.tag.grey{background:#f1f1f4;border-color:var(--line);color:var(--ink3)}
+.meta{color:var(--ink3);font-size:13.5px}
+.fc .t{margin:0 0 4px;font-size:17px;line-height:1.3;font-weight:700}
+.fc .d{margin:0 0 10px;color:var(--ink2);font-size:14.5px;line-height:1.4}
+.bar{height:6px;border-radius:3px;background:#ececf0;overflow:hidden;margin:0 0 12px}
+.bar i{display:block;height:100%;background:var(--red);border-radius:3px}
+.go{color:var(--red);font-weight:700;font-size:16px}
+.fc:disabled .go{color:var(--ink3)}
+
+.row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:16px;padding:14px 16px;font-size:15px}
+.switch{appearance:none;width:51px;height:31px;border-radius:16px;background:#e3e3e8;position:relative;cursor:pointer;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:left .2s}
+.switch:checked{background:var(--red)} .switch:checked::after{left:22px}
+.links{display:flex;gap:10px}
+.links button{flex:1;background:#fff;border:0;border-radius:16px;padding:14px;font-weight:700;font-size:15px;color:var(--red)}
+.links .muted{color:var(--ink2)}
 
 /* lesson */
-.lessontop{display:flex;align-items:center;gap:14px;padding:4px 0 24px}
-.close{background:none;border:0;font-size:26px;color:var(--muted);line-height:1;padding:0 4px}
-.bar{flex:1;height:16px;border-radius:16px;background:var(--line);overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:16px;transition:width .35s ease;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08), inset 0 4px 0 rgba(255,255,255,.25)}
-.combo{font-weight:900;color:var(--orange);min-width:52px;text-align:right}
-
-.prompt{font-size:22px;font-weight:900;margin:0 0 18px}
-.tag{display:inline-block;font-size:12px;font-weight:900;color:#a560e8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.card{display:flex;justify-content:center;margin-bottom:22px}
-.photo{height:230px;width:142px;object-fit:cover;border-radius:16px;border:2px solid var(--line);background:var(--surface)}
-.bigtext{width:100%;padding:28px 20px;border-radius:16px;border:2px solid var(--line);text-align:center}
-.bigtext .main{font-size:26px;font-weight:900}
-.bigtext .prov{color:var(--muted);font-weight:700;margin-top:4px}
-
-.opts{display:grid;gap:12px}
-.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);border-bottom-width:4px;background:var(--opt-bg);font-weight:700;font-size:17px}
-.opt:hover:not(:disabled){background:var(--surface)}
-.opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--muted)}
-.opt.picked{border-color:var(--blue);background:var(--blue-soft)}
-.opt.right{border-color:var(--green);background:var(--green-soft);color:var(--green-text)}
-.opt.wrong{border-color:var(--red);background:var(--red-soft);color:var(--red-text)}
+.lhdr{gap:14px}
+.prog{flex:1;height:10px;border-radius:5px;background:#ececf0;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--red);border-radius:5px;transition:width .35s ease}
+.combo{font-weight:800;color:var(--red);font-size:15px;min-width:44px;text-align:right}
+.qwrap{padding:18px 16px}
+.qtag{margin-bottom:10px}
+.prompt{font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0 0 16px}
+.card{display:flex;justify-content:center;margin-bottom:18px}
+.photo{height:230px;width:142px;object-fit:cover;border-radius:18px;background:#e9e9ee}
+.bigtext{width:100%;padding:26px 18px;border-radius:22px;background:#fff;text-align:center}
+.bigtext .main{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.bigtext .prov{color:var(--ink3);font-weight:600;margin-top:4px;font-size:14px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:14px 16px;border-radius:16px;border:2px solid transparent;background:#fff;font-weight:600;font-size:17px}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;background:#f1f1f4;display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--ink3)}
+.opt.picked{border-color:var(--red)} .opt.picked .k{background:var(--red);color:#fff}
+.opt.right{border-color:var(--green-line);background:var(--green-bg);color:var(--green)} .opt.right .k{background:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red-line);background:var(--red-bg);color:var(--red)} .opt.wrong .k{background:var(--red);color:#fff}
 .opt:disabled{cursor:default}
 
-/* footer */
-.foot{position:fixed;left:0;right:0;bottom:0;border-top:2px solid var(--line);background:var(--bg)}
-.foot.ok{background:var(--green-soft);border-color:transparent}
-.foot.bad{background:var(--red-soft);border-color:transparent}
-.footin{max-width:640px;margin:0 auto;padding:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.fb{flex:1;min-width:200px;display:flex;gap:12px;align-items:center}
-.fb img{width:52px;height:84px;object-fit:cover;border-radius:10px;flex:none}
-.fb .h{font-size:22px;font-weight:900}
-.foot.ok .h{color:var(--green-text)} .foot.bad .h,.foot.bad .ans{color:var(--red-text)}
-.fb .ans{font-weight:700}
-.btn{border:0;border-radius:14px;padding:14px 28px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-dark);min-width:150px}
-.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--green-dark)}
-.btn.red{background:var(--red);box-shadow:0 4px 0 var(--red-dark)}
-.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)}
-.btn:disabled{background:var(--line);box-shadow:0 4px 0 var(--opt-shadow);color:var(--muted);cursor:default}
-.footin .btn{margin-left:auto}
+/* bottom sheet */
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:6}
+.foot.ok{background:var(--green-bg);border-color:var(--green-line)}
+.foot.bad{background:var(--red-bg);border-color:var(--red-line)}
+.footin{max-width:560px;margin:0 auto;padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
+.fb{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.fb:empty{display:none}
+.fb img{width:46px;height:74px;object-fit:cover;border-radius:10px;flex:none}
+.fb .h{font-size:19px;font-weight:800}
+.foot.ok .h{color:var(--green)} .foot.bad .h{color:var(--red)}
+.fb .ans{font-weight:600;font-size:15px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-weight:700;font-size:16px;color:#fff;background:var(--red)}
+.btn:active{background:var(--red-dark)}
+.btn:disabled{background:#e3e3e8;color:var(--ink3);cursor:default}
+.btn.ghost{background:#fff;color:var(--red);border:2px solid var(--red)}
+.foot.ok .btn{background:var(--green)}
 
 /* results */
-.done{text-align:center;padding-top:24px}
-.done .big{font-size:56px}
-.done h1{color:var(--gold)}
-.tiles{display:flex;gap:12px;justify-content:center;margin:24px 0}
-.tile{flex:1;max-width:150px;border-radius:16px;border:2px solid var(--gold);overflow:hidden}
-.tile .l{background:var(--gold);color:#fff;font-weight:900;font-size:13px;text-transform:uppercase;padding:4px}
-.tile .v{font-size:24px;font-weight:900;padding:12px 4px}
-.tile.g{border-color:var(--green)} .tile.g .l{background:var(--green)}
-.tile.b{border-color:var(--blue)} .tile.b .l{background:var(--blue)}
-.review{text-align:left;margin-top:16px}
-.rv{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:2px solid var(--line)}
-.rv img{width:44px;height:71px;object-fit:cover;border-radius:8px;flex:none}
-.rv .n{font-weight:800} .rv .r{color:var(--muted);font-size:14px}
+.res{padding:16px;display:flex;flex-direction:column;gap:12px}
+.res .drop h2{margin:10px 0 2px;font-size:24px;font-weight:800}
+.res .drop small{color:var(--navy-text);font-size:13.5px}
+.rv{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:10px 12px}
+.rv img{width:40px;height:64px;object-fit:cover;border-radius:8px;flex:none}
+.rv .n{font-weight:700} .rv .r{color:var(--ink2);font-size:14px}
 
 /* study grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
-.gcard{border:2px solid var(--line);border-radius:14px;padding:8px;text-align:center}
-.gcard img{width:100%;aspect-ratio:142/230;object-fit:cover;border-radius:10px}
-.gcard .n{font-weight:800;font-size:14px;margin-top:6px}
-.gcard .r{color:var(--muted);font-size:12px}
-.gcard .s{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;padding:14px}
+.gcard{background:#fff;border-radius:18px;padding:8px 8px 10px;text-align:center}
+.gcard img{width:100%;aspect-ratio:142/230;object-fit:cover;border-radius:12px}
+.gcard .n{font-weight:700;font-size:14px;margin-top:6px;line-height:1.25}
+.gcard .r{color:var(--ink2);font-size:12px;margin-top:2px}
+.gcard .s{display:inline-block;margin-top:6px}
+.gcard .tag{font-size:11px;padding:1px 7px}
 
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .pop{animation:pop .25s ease} .shake{animation:shake .3s ease}
-@media (max-width:480px){.photo{height:200px;width:124px}.prompt{font-size:19px}.bigtext .main{font-size:22px}.btn{min-width:0;width:100%}.footin .btn{margin-left:0}}
+@media (prefers-reduced-motion:reduce){.live,.pop,.shake{animation:none}.prog i{transition:none}}
+@media (max-width:380px){.photo{height:200px;width:124px}.prompt{font-size:20px}}
 </style>
 </head>
 <body>
 
 <!-- HOME -->
-<div id="home" class="wrap">
-  <div class="stats">
-    <span class="stat streak" title="Day streak"><span class="ic">🔥</span><span id="sStreak">0</span></span>
-    <span class="stat xp" title="Total XP"><span class="ic">⚡</span><span id="sXp">0</span></span>
-    <span class="stat mast" title="Mastered cards in this deck"><span class="ic">🎓</span><span id="sMast">0</span></span>
-    <button class="iconbtn" id="soundBtn" title="Sound on/off">🔊</button>
-  </div>
-  <h1>Know Your MPs</h1>
-  <p class="sub">Liberal caucus · <span id="deckCount"></span></p>
+<div id="home" class="page">
+  <header class="hdr">
+    <div class="tt"><div class="eyebrow">MP Quiz</div><div class="big">Know Your MPs</div></div>
+    <button class="circ" id="soundBtn" title="Sound on/off" aria-label="Sound on/off"></button>
+  </header>
+  <nav class="filters" id="decks" aria-label="Deck"></nav>
+  <div class="feed">
+    <div class="drop">
+      <div class="drop-top"><span class="live"></span>Your progress<span class="of" id="deckName"></span></div>
+      <div class="nums">
+        <div class="num"><b id="sStreak">0</b><span>day streak</span></div>
+        <div class="num"><b id="sXp">0</b><span>total XP</span></div>
+        <div class="num"><b id="sMast">0</b><span>mastered</span></div>
+      </div>
+      <div class="track" id="goalTrack"></div>
+      <div class="streak"><span id="goalText"></span><span>Daily goal</span></div>
+    </div>
 
-  <h2>Deck</h2>
-  <select id="deck"></select>
+    <div class="sec">Levels</div>
+    <div id="levels" style="display:flex;flex-direction:column;gap:12px"></div>
 
-  <h2>Pick a level</h2>
-  <div class="levels" id="levels"></div>
-  <label class="toggle"><input type="checkbox" id="unlockAll"> Unlock all levels</label>
-
-  <div class="links">
-    <button class="link" id="studyBtn">Study the deck</button>
-    <button class="link" id="resetBtn" style="color:var(--red)">Reset progress</button>
+    <div class="sec">More</div>
+    <label class="row">Unlock all levels <input type="checkbox" class="switch" id="unlockAll"></label>
+    <div class="links">
+      <button id="studyBtn">Study the deck</button>
+      <button id="resetBtn" class="muted">Reset progress</button>
+    </div>
   </div>
 </div>
 
 <!-- LESSON -->
-<div id="lesson" class="wrap hidden">
-  <div class="lessontop">
-    <button class="close" id="quitBtn" title="Quit lesson">✕</button>
-    <div class="bar"><i id="bar"></i></div>
+<div id="lesson" class="page hidden">
+  <header class="hdr lhdr">
+    <button class="circ" id="quitBtn" title="Quit lesson" aria-label="Quit lesson">✕</button>
+    <div class="prog"><i id="bar"></i></div>
     <div class="combo" id="combo"></div>
-  </div>
-  <div id="q"></div>
+  </header>
+  <div class="qwrap" id="q"></div>
 </div>
 <div class="foot hidden" id="foot"><div class="footin">
   <div class="fb" id="fb"></div>
@@ -171,10 +189,10 @@ select{width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--li
 </div></div>
 
 <!-- RESULTS -->
-<div id="results" class="wrap hidden"></div>
+<div id="results" class="page hidden"></div>
 
 <!-- STUDY -->
-<div id="study" class="wrap hidden"></div>
+<div id="study" class="page hidden"></div>
 
 <script>
 const DATA = {"mps":[{"id":"123092","first":"Sima","last":"Acan","name":"Sima Acan","riding":"Oakville West","prov":"Ontario"},{"id":"123033","first":"Fares","last":"Al Soud","name":"Fares Al Soud","riding":"Mississauga Centre","prov":"Ontario"},{"id":"110339","first":"Shafqat","last":"Ali","name":"Shafqat Ali","riding":"Brampton—Chinguacousy Park","prov":"Ontario"},{"id":"123675","first":"Rebecca","last":"Alty","name":"Rebecca Alty","riding":"Northwest Territories","prov":"Northwest Territories"},{"id":"96081","first":"Anita","last":"Anand","name":"Anita Anand","riding":"Oakville East","prov":"Ontario"},{"id":"89449","first":"Gary","last":"Anandasangaree","name":"Gary Anandasangaree","riding":"Scarborough—Guildwood—Rouge Park","prov":"Ontario"},{"id":"122753","first":"Tatiana","last":"Auguste","name":"Tatiana Auguste","riding":"Terrebonne","prov":"Quebec"},{"id":"111067","first":"Parm","last":"Bains","name":"Parm Bains","riding":"Richmond East—Steveston","prov":"British Columbia"},{"id":"105121","first":"Yvan","last":"Baker","name":"Yvan Baker","riding":"Etobicoke Centre","prov":"Ontario"},{"id":"123214","first":"Karim","last":"Bardeesy","name":"Karim Bardeesy","riding":"Taiaiako'n—Parkdale—High Park","prov":"Ontario"},{"id":"104571","first":"Jaime","last":"Battiste","name":"Jaime Battiste","riding":"Cape Breton—Canso—Antigonish","prov":"Nova Scotia"},{"id":"89236","first":"Terry","last":"Beech","name":"Terry Beech","riding":"Burnaby North—Seymour","prov":"British Columbia"},{"id":"141713","first":"Doly","last":"Begum","name":"Doly Begum","riding":"Scarborough Southwest","prov":"Ontario"},{"id":"110791","first":"Buckley","last":"Belanger","name":"Buckley Belanger","riding":"Desnethé—Missinippi—Churchill River","prov":"Saskatchewan"},{"id":"88567","first":"Rachel","last":"Bendayan","name":"Rachel Bendayan","riding":"Outremont","prov":"Quebec"},{"id":"88934","first":"Chris","last":"Bittle","name":"Chris Bittle","riding":"St. Catharines","prov":"Ontario"},{"id":"104555","first":"Kody","last":"Blois","name":"Kody Blois","riding":"Kings—Hants","prov":"Nova Scotia"},{"id":"104977","first":"Élisabeth","last":"Brière","name":"Élisabeth Brière","riding":"Sherbrooke","prov":"Quebec"},{"id":"142764","first":"Braeden","last":"Caley","name":"Braeden Caley","riding":"North Vancouver—Capilano","prov":"British Columbia"},{"id":"28286","first":"Mark","last":"Carney","name":"Mark Carney","riding":"Nepean","prov":"Ontario"},{"id":"115744","first":"Ben","last":"Carr","name":"Ben Carr","riding":"Winnipeg South Centre","prov":"Manitoba"},{"id":"71270","first":"Sean","last":"Casey","name":"Sean Casey","riding":"Charlottetown","prov":"Prince Edward Island"},{"id":"89000","first":"Bardish","last":"Chagger","name":"Bardish Chagger","riding":"Waterloo","prov":"Ontario"},{"id":"88633","first":"François-Philippe","last":"Champagne","name":"François-Philippe Champagne","riding":"Saint-Maurice—Champlain","prov":"Quebec"},{"id":"123520","first":"Wade","last":"Chang","name":"Wade Chang","riding":"Burnaby Central","prov":"British Columbia"},{"id":"89464","first":"Rebecca","last":"Chartrand","name":"Rebecca Chartrand","riding":"Churchill—Keewatinook Aski","prov":"Manitoba"},{"id":"110225","first":"Sophie","last":"Chatel","name":"Sophie Chatel","riding":"Pontiac—Kitigan Zibi","prov":"Quebec"},{"id":"122756","first":"Madeleine","last":"Chenette","name":"Madeleine Chenette","riding":"Thérèse-De Blainville","prov":"Quebec"},{"id":"122899","first":"Maggie","last":"Chi","name":"Maggie Chi","riding":"Don Valley North","prov":"Ontario"},{"id":"119705","first":"Leslie","last":"Church","name":"Leslie Church","riding":"Toronto—St. Paul's","prov":"Ontario"},{"id":"122437","first":"Braedon","last":"Clark","name":"Braedon Clark","riding":"Sackville—Bedford—Preston","prov":"Nova Scotia"},{"id":"122369","first":"Paul","last":"Connors","name":"Paul Connors","riding":"Avalon","prov":"Newfoundland and Labrador"},{"id":"88350","first":"Serge","last":"Cormier","name":"Serge Cormier","riding":"Acadie—Bathurst","prov":"New Brunswick"},{"id":"110373","first":"Michael","last":"Coteau","name":"Michael Coteau","riding":"Scarborough—Woburn","prov":"Ontario"},{"id":"49344","first":"Chris","last":"d'Entremont","name":"Chris d'Entremont","riding":"Acadie—Annapolis","prov":"Nova Scotia"},{"id":"88994","first":"Julie","last":"Dabrusin","name":"Julie Dabrusin","riding":"Toronto—Danforth","prov":"Ontario"},{"id":"122559","first":"Marianne","last":"Dandurand","name":"Marianne Dandurand","riding":"Compton—Stanstead","prov":"Quebec"},{"id":"122959","first":"John-Paul","last":"Danko","name":"John-Paul Danko","riding":"Hamilton West—Ancaster—Dundas","prov":"Ontario"},{"id":"122473","first":"Guillaume","last":"Deschênes-Thériault","name":"Guillaume Deschênes-Thériault","riding":"Madawaska—Restigouche","prov":"New Brunswick"},{"id":"110124","first":"Caroline","last":"Desrochers","name":"Caroline Desrochers","riding":"Trois-Rivières","prov":"Quebec"},{"id":"31098","first":"Sukh","last":"Dhaliwal","name":"Sukh Dhaliwal","riding":"Surrey Newton","prov":"British Columbia"},{"id":"88453","first":"Anju","last":"Dhillon","name":"Anju Dhillon","riding":"Dorval—Lachine—LaSalle","prov":"Quebec"},{"id":"109915","first":"Lena Metlege","last":"Diab","name":"Lena Metlege Diab","riding":"Halifax West—Peggy's Cove","prov":"Nova Scotia"},{"id":"89408","first":"Jean-Yves","last":"Duclos","name":"Jean-Yves Duclos","riding":"Québec Centre","prov":"Quebec"},{"id":"31119","first":"Terry","last":"Duguid","name":"Terry Duguid","riding":"Winnipeg South","prov":"Manitoba"},{"id":"88721","first":"Julie","last":"Dzerowicz","name":"Julie Dzerowicz","riding":"Davenport","prov":"Ontario"},{"id":"122380","first":"Philip","last":"Earle","name":"Philip Earle","riding":"Labrador","prov":"Newfoundland and Labrador"},{"id":"89010","first":"Ali","last":"Ehsassi","name":"Ali Ehsassi","riding":"Willowdale","prov":"Ontario"},{"id":"88515","first":"Fayçal","last":"El-Khoury","name":"Fayçal El-Khoury","riding":"Laval—Les Îles","prov":"Quebec"},{"id":"89027","first":"Doug","last":"Eyolfson","name":"Doug Eyolfson","riding":"Winnipeg West","prov":"Manitoba"},{"id":"122443","first":"Jessica","last":"Fancy","name":"Jessica Fancy","riding":"South Shore—St. Margarets","prov":"Nova Scotia"},{"id":"122850","first":"Bruce","last":"Fanjoy","name":"Bruce Fanjoy","riding":"Carleton","prov":"Ontario"},{"id":"88478","first":"Greg","last":"Fergus","name":"Greg Fergus","riding":"Hull—Aylmer","prov":"Quebec"},{"id":"88323","first":"Darren","last":"Fisher","name":"Darren Fisher","riding":"Dartmouth—Cole Harbour","prov":"Nova Scotia"},{"id":"71692","first":"Peter","last":"Fonseca","name":"Peter Fonseca","riding":"Mississauga East—Cooksville","prov":"Ontario"},{"id":"96356","first":"Mona","last":"Fortier","name":"Mona Fortier","riding":"Ottawa—Vanier—Gloucester","prov":"Ontario"},{"id":"88827","first":"Peter","last":"Fragiskatos","name":"Peter Fragiskatos","riding":"London Centre","prov":"Ontario"},{"id":"88316","first":"Sean","last":"Fraser","name":"Sean Fraser","riding":"Central Nova","prov":"Nova Scotia"},{"id":"1589","first":"Hedy","last":"Fry","name":"Hedy Fry","riding":"Vancouver Centre","prov":"British Columbia"},{"id":"89279","first":"Stephen","last":"Fuhr","name":"Stephen Fuhr","riding":"Kelowna","prov":"British Columbia"},{"id":"110534","first":"Iqwinder","last":"Gaheer","name":"Iqwinder Gaheer","riding":"Mississauga—Malton","prov":"Ontario"},{"id":"115736","first":"Anna","last":"Gainey","name":"Anna Gainey","riding":"Notre-Dame-de-Grâce—Westmount","prov":"Quebec"},{"id":"122911","first":"Vince","last":"Gasparro","name":"Vince Gasparro","riding":"Eglinton—Lawrence","prov":"Ontario"},{"id":"88802","first":"Mark","last":"Gerretsen","name":"Mark Gerretsen","riding":"Kingston and the Islands","prov":"Ontario"},{"id":"88938","first":"Marilyn","last":"Gladu","name":"Marilyn Gladu","riding":"Sarnia—Lambton—Bkejwanong","prov":"Ontario"},{"id":"107294","first":"Daniel","last":"Gobeil","name":"Daniel Gobeil","riding":"Chicoutimi—Le Fjord","prov":"Quebec"},{"id":"88715","first":"Karina","last":"Gould","name":"Karina Gould","riding":"Burlington","prov":"Ontario"},{"id":"123653","first":"Wade","last":"Grant","name":"Wade Grant","riding":"Vancouver Quadra","prov":"British Columbia"},{"id":"123665","first":"Will","last":"Greaves","name":"Will Greaves","riding":"Victoria","prov":"British Columbia"},{"id":"122615","first":"Claude","last":"Guay","name":"Claude Guay","riding":"LaSalle—Émard—Verdun","prov":"Quebec"},{"id":"122492","first":"Mandy","last":"Gull-Masty","name":"Mandy Gull-Masty","riding":"Abitibi—Baie-James—Nunavik—Eeyou","prov":"Quebec"},{"id":"88984","first":"Patty","last":"Hajdu","name":"Patty Hajdu","riding":"Thunder Bay—Superior North","prov":"Ontario"},{"id":"111109","first":"Brendan","last":"Hanley","name":"Brendan Hanley","riding":"Yukon","prov":"Yukon"},{"id":"123133","first":"Emma","last":"Harrison","name":"Emma Harrison","riding":"Peterborough","prov":"Ontario"},{"id":"110446","first":"Lisa","last":"Hepfner","name":"Lisa Hepfner","riding":"Hamilton Mountain","prov":"Ontario"},{"id":"122419","first":"Alana","last":"Hirtle","name":"Alana Hirtle","riding":"Cumberland—Colchester","prov":"Nova Scotia"},{"id":"123019","first":"Tim","last":"Hodgson","name":"Tim Hodgson","riding":"Markham—Thornhill","prov":"Ontario"},{"id":"123382","first":"Corey","last":"Hogan","name":"Corey Hogan","riding":"Calgary Confederation","prov":"Alberta"},{"id":"88558","first":"Anthony","last":"Housefather","name":"Anthony Housefather","riding":"Mount Royal","prov":"Quebec"},{"id":"89020","first":"Ahmed","last":"Hussen","name":"Ahmed Hussen","riding":"York South—Weston—Etobicoke","prov":"Ontario"},{"id":"71337","first":"Angelo","last":"Iacono","name":"Angelo Iacono","riding":"Alfred-Pellan","prov":"Quebec"},{"id":"111116","first":"Lori","last":"Idlout","name":"Lori Idlout","riding":"Nunavut","prov":"Nunavut"},{"id":"105229","first":"Helena","last":"Jaczek","name":"Helena Jaczek","riding":"Markham—Stouffville","prov":"Ontario"},{"id":"89167","first":"Matt","last":"Jeneroux","name":"Matt Jeneroux","riding":"Edmonton Riverbend","prov":"Alberta"},{"id":"88384","first":"Mélanie","last":"Joly","name":"Mélanie Joly","riding":"Ahuntsic-Cartierville","prov":"Quebec"},{"id":"122646","first":"Natilien","last":"Joseph","name":"Natilien Joseph","riding":"Longueuil—Saint-Hubert","prov":"Quebec"},{"id":"110502","first":"Arielle","last":"Kayabaga","name":"Arielle Kayabaga","riding":"London West","prov":"Ontario"},{"id":"104531","first":"Mike","last":"Kelloway","name":"Mike Kelloway","riding":"Sydney—Glace Bay","prov":"Nova Scotia"},{"id":"88849","first":"Iqra","last":"Khalid","name":"Iqra Khalid","riding":"Mississauga—Erin Mills","prov":"Ontario"},{"id":"123625","first":"Ernie","last":"Klassen","name":"Ernie Klassen","riding":"South Surrey—White Rock","prov":"British Columbia"},{"id":"105009","first":"Annie","last":"Koutrakis","name":"Annie Koutrakis","riding":"Vimy","prov":"Quebec"},{"id":"92209","first":"Marie-France","last":"Lalonde","name":"Marie-France Lalonde","riding":"Orléans","prov":"Ontario"},{"id":"96350","first":"Emmanuella","last":"Lambropoulos","name":"Emmanuella Lambropoulos","riding":"Saint-Laurent","prov":"Quebec"},{"id":"30552","first":"Kevin","last":"Lamoureux","name":"Kevin Lamoureux","riding":"Winnipeg North","prov":"Manitoba"},{"id":"88601","first":"Linda","last":"Lapointe","name":"Linda Lapointe","riding":"Rivière-des-Mille-Îles","prov":"Quebec"},{"id":"110663","first":"Viviane","last":"Lapointe","name":"Viviane Lapointe","riding":"Sudbury","prov":"Ontario"},{"id":"104957","first":"Patricia","last":"Lattanzio","name":"Patricia Lattanzio","riding":"Saint-Léonard—Saint-Michel","prov":"Quebec"},{"id":"88394","first":"Stéphane","last":"Lauzon","name":"Stéphane Lauzon","riding":"Argenteuil—Papineau—Des Collines","prov":"Quebec"},{"id":"123305","first":"Ginette","last":"Lavack","name":"Ginette Lavack","riding":"St. Boniface—St. Vital","prov":"Manitoba"},{"id":"122518","first":"Steeve","last":"Lavoie","name":"Steeve Lavoie","riding":"Beauport—Limoilou","prov":"Quebec"},{"id":"1813","first":"Dominic","last":"LeBlanc","name":"Dominic LeBlanc","riding":"Beauséjour","prov":"New Brunswick"},{"id":"122656","first":"Carlos","last":"Leitão","name":"Carlos Leitão","riding":"Marc-Aurèle-Fortin","prov":"Quebec"},{"id":"88532","first":"Joël","last":"Lightbound","name":"Joël Lightbound","riding":"Louis-Hébert","prov":"Quebec"},{"id":"88368","first":"Wayne","last":"Long","name":"Wayne Long","riding":"Saint John—Kennebecasis","prov":"New Brunswick"},{"id":"88810","first":"Tim","last":"Louis","name":"Tim Louis","riding":"Kitchener—Conestoga","prov":"Ontario"},{"id":"105088","first":"Michael","last":"Ma","name":"Michael Ma","riding":"Markham—Unionville","prov":"Ontario"},{"id":"109891","first":"Heath","last":"MacDonald","name":"Heath MacDonald","riding":"Malpeque","prov":"Prince Edward Island"},{"id":"122394","first":"Kent","last":"MacDonald","name":"Kent MacDonald","riding":"Cardigan","prov":"Prince Edward Island"},{"id":"88468","first":"Steven","last":"MacKinnon","name":"Steven MacKinnon","riding":"Gatineau","prov":"Quebec"},{"id":"122788","first":"Chris","last":"Malette","name":"Chris Malette","riding":"Bay of Quinte","prov":"Ontario"},{"id":"88748","first":"James","last":"Maloney","name":"James Maloney","riding":"Etobicoke—Lakeshore","prov":"Ontario"},{"id":"90964","first":"Danielle","last":"Martin","name":"Danielle Martin","riding":"University—Rosedale","prov":"Ontario"},{"id":"9486","first":"David","last":"McGuinty","name":"David McGuinty","riding":"Ottawa South","prov":"Ontario"},{"id":"122773","first":"Jennifer","last":"McKelvie","name":"Jennifer McKelvie","riding":"Ajax","prov":"Ontario"},{"id":"59293","first":"Ron","last":"McKinnon","name":"Ron McKinnon","riding":"Coquitlam—Port Coquitlam","prov":"British Columbia"},{"id":"123556","first":"Jill","last":"McKnight","name":"Jill McKnight","riding":"Delta","prov":"British Columbia"},{"id":"123563","first":"Stephanie","last":"McLean","name":"Stephanie McLean","riding":"Esquimalt—Saanich—Sooke","prov":"British Columbia"},{"id":"122587","first":"Marie-Gabrielle","last":"Ménard","name":"Marie-Gabrielle Ménard","riding":"Hochelaga—Rosemont-Est","prov":"Quebec"},{"id":"58621","first":"Alexandra","last":"Mendès","name":"Alexandra Mendès","riding":"Brossard—Saint-Lambert","prov":"Quebec"},{"id":"122684","first":"Marjorie","last":"Michel","name":"Marjorie Michel","riding":"Papineau","prov":"Quebec"},{"id":"122428","first":"Shannon","last":"Miedema","name":"Shannon Miedema","riding":"Halifax","prov":"Nova Scotia"},{"id":"88660","first":"Marc","last":"Miller","name":"Marc Miller","riding":"Ville-Marie—Le Sud-Ouest—Île-des-Soeurs","prov":"Quebec"},{"id":"123144","first":"Giovanna","last":"Mingarelli","name":"Giovanna Mingarelli","riding":"Prescott—Russell—Cumberland","prov":"Ontario"},{"id":"88308","first":"Robert","last":"Morrissey","name":"Robert Morrissey","riding":"Egmont","prov":"Prince Edward Island"},{"id":"122462","first":"David","last":"Myles","name":"David Myles","riding":"Fredericton—Oromocto","prov":"New Brunswick"},{"id":"110572","first":"Yasir","last":"Naqvi","name":"Yasir Naqvi","riding":"Ottawa Centre","prov":"Ontario"},{"id":"123141","first":"Juanita","last":"Nathan","name":"Juanita Nathan","riding":"Pickering—Brooklin","prov":"Ontario"},{"id":"123192","first":"Chi","last":"Nguyen","name":"Chi Nguyen","riding":"Spadina—Harbourfront","prov":"Ontario"},{"id":"72023","first":"Taleeb","last":"Noormohamed","name":"Taleeb Noormohamed","riding":"Vancouver Granville","prov":"British Columbia"},{"id":"122668","first":"Bienvenu-Olivier","last":"Ntumba","name":"Bienvenu-Olivier Ntumba","riding":"Mont-Saint-Bruno—L'Acadie","prov":"Quebec"},{"id":"122933","first":"Dominique","last":"O'Rourke","name":"Dominique O'Rourke","riding":"Guelph","prov":"Ontario"},{"id":"58858","first":"Robert","last":"Oliphant","name":"Robert Oliphant","riding":"Don Valley West","prov":"Ontario"},{"id":"89171","first":"Eleanor","last":"Olszewski","name":"Eleanor Olszewski","riding":"Edmonton Centre","prov":"Alberta"},{"id":"122375","first":"Tom","last":"Osborne","name":"Tom Osborne","riding":"Cape Spear—Mount Pearl—Paradise","prov":"Newfoundland and Labrador"},{"id":"88364","first":"Ginette","last":"Petitpas Taylor","name":"Ginette Petitpas Taylor","riding":"Moncton—Dieppe","prov":"New Brunswick"},{"id":"105437","first":"Marcus","last":"Powlowski","name":"Marcus Powlowski","riding":"Thunder Bay—Rainy River","prov":"Ontario"},{"id":"122552","first":"Nathalie","last":"Provost","name":"Nathalie Provost","riding":"Châteauguay—Les Jardins-de-Napierville","prov":"Quebec"},{"id":"122606","first":"Jacques","last":"Ramsay","name":"Jacques Ramsay","riding":"La Prairie—Atateken","prov":"Quebec"},{"id":"122946","first":"Aslam","last":"Rana","name":"Aslam Rana","riding":"Hamilton Centre","prov":"Ontario"},{"id":"123644","first":"Gregor","last":"Robertson","name":"Gregor Robertson","riding":"Vancouver Fraserview—South Burnaby","prov":"British Columbia"},{"id":"123081","first":"Pauline","last":"Rochefort","name":"Pauline Rochefort","riding":"Nipissing—Timiskaming","prov":"Ontario"},{"id":"88521","first":"Sherry","last":"Romanado","name":"Sherry Romanado","riding":"Longueuil—Charles-LeMoyne—Greenfield Park","prov":"Quebec"},{"id":"59294","first":"Zoe","last":"Royer","name":"Zoe Royer","riding":"Port Moody—Coquitlam","prov":"British Columbia"},{"id":"88698","first":"Ruby","last":"Sahota","name":"Ruby Sahota","riding":"Brampton North—Caledon","prov":"Ontario"},{"id":"1422","first":"Gurbux","last":"Saini","name":"Gurbux Saini","riding":"Fleetwood—Port Kells","prov":"British Columbia"},{"id":"89339","first":"Randeep","last":"Sarai","name":"Randeep Sarai","riding":"Surrey Centre","prov":"British Columbia"},{"id":"122533","first":"Abdelhaq","last":"Sari","name":"Abdelhaq Sari","riding":"Bourassa","prov":"Quebec"},{"id":"123583","first":"Jake","last":"Sawatzky","name":"Jake Sawatzky","riding":"New Westminster—Burnaby—Maillardville","prov":"British Columbia"},{"id":"25453","first":"Francis","last":"Scarpaleggia","name":"Francis Scarpaleggia","riding":"Lac-Saint-Louis","prov":"Quebec"},{"id":"88649","first":"Peter","last":"Schiefke","name":"Peter Schiefke","riding":"Vaudreuil","prov":"Quebec"},{"id":"1787","first":"Judy A.","last":"Sgro","name":"Judy A. Sgro","riding":"Humber River—Black Creek","prov":"Ontario"},{"id":"142763","first":"Tanveer","last":"Shahnawaz","name":"Tanveer Shahnawaz","riding":"Beaches—East York","prov":"Ontario"},{"id":"88944","first":"Terry","last":"Sheehan","name":"Terry Sheehan","riding":"Sault Ste. Marie—Algoma","prov":"Ontario"},{"id":"105045","first":"Maninder","last":"Sidhu","name":"Maninder Sidhu","riding":"Brampton East","prov":"Ontario"},{"id":"88703","first":"Sonia","last":"Sidhu","name":"Sonia Sidhu","riding":"Brampton South","prov":"Ontario"},{"id":"122801","first":"Amandeep","last":"Sodhi","name":"Amandeep Sodhi","riding":"Brampton Centre","prov":"Ontario"},{"id":"123229","first":"Evan","last":"Solomon","name":"Evan Solomon","riding":"Toronto Centre","prov":"Ontario"},{"id":"114349","first":"Charles","last":"Sousa","name":"Charles Sousa","riding":"Mississauga—Lakeshore","prov":"Ontario"},{"id":"122589","first":"Eric","last":"St-Pierre","name":"Eric St-Pierre","riding":"Honoré-Mercier","prov":"Quebec"},{"id":"110459","first":"Jenna","last":"Sudds","name":"Jenna Sudds","riding":"Kanata","prov":"Ontario"},{"id":"123027","first":"Kristina","last":"Tesser Derksen","name":"Kristina Tesser Derksen","riding":"Milton East—Halton Hills South","prov":"Ontario"},{"id":"109877","first":"Joanne","last":"Thompson","name":"Joanne Thompson","riding":"St. John's East","prov":"Newfoundland and Labrador"},{"id":"105480","first":"Ryan","last":"Turnbull","name":"Ryan Turnbull","riding":"Whitby","prov":"Ontario"},{"id":"110538","first":"Rechie","last":"Valdez","name":"Rechie Valdez","riding":"Mississauga—Streetsville","prov":"Ontario"},{"id":"105242","first":"Adam","last":"van Koeverden","name":"Adam van Koeverden","riding":"Burlington North—Milton West","prov":"Ontario"},{"id":"71738","first":"Anita","last":"Vandenbeld","name":"Anita Vandenbeld","riding":"Ottawa West—Nepean","prov":"Ontario"},{"id":"122539","first":"Louis","last":"Villeneuve","name":"Louis Villeneuve","riding":"Brome—Missisquoi","prov":"Quebec"},{"id":"122637","first":"Tim","last":"Watchorn","name":"Tim Watchorn","riding":"Les Pays-d'en-Haut","prov":"Quebec"},{"id":"105918","first":"Patrick","last":"Weiler","name":"Patrick Weiler","riding":"West Vancouver—Sunshine Coast—Sea to Sky Country","prov":"British Columbia"},{"id":"98747","first":"Jean","last":"Yip","name":"Jean Yip","riding":"Scarborough—Agincourt","prov":"Ontario"},{"id":"88950","first":"Salma","last":"Zahid","name":"Salma Zahid","riding":"Scarborough Centre—Don Valley East","prov":"Ontario"},{"id":"122925","first":"John","last":"Zerucelli","name":"John Zerucelli","riding":"Etobicoke North","prov":"Ontario"},{"id":"54157","first":"Sameer","last":"Zuberi","name":"Sameer Zuberi","riding":"Pierrefonds—Dollard","prov":"Quebec"},{"id":"110454","first":"Shelby","last":"Kramp-Neuman","name":"Shelby Kramp-Neuman","riding":"Hastings—Lennox and Addington—Tyendinaga","prov":"Ontario"},{"id":"116022","first":"Shuvaloy","last":"Majumdar","name":"Shuvaloy Majumdar","riding":"Calgary Heritage","prov":"Alberta"}],"video":["123092","110339","123675","122753","111067","89236","110791","104977","142764","115744","89000","89464","110225","122756","122899","119705","49344","122473","31098","109915","89408","122443","88323","96356","122911","88938","107294","123665","111109","110446","122419","123625","105009","110454","92209","30552","110663","123305","122518","122656","105088","88468","116022","122788","88748","90964","9486","122773","123556","88660","123144","122587","110572","123192","122668","122933","89171","122375","105437","122606","123081","88521","59294","88698","89339","122533","123583","1787","88703","122801","114349","110459","110538","71738","122539","88950"],"look":{"104531":["88633","110339","111067","88468","114349","72023"],"104555":["123229","88633","122533","105918","122850","1813"],"104571":["122959","122615","122589","88308","122925","88802"],"104957":["110459","1787","110446","122419","88984","123144"],"104977":["123133","88984","89171","96356","110459","122773"],"105009":["123305","122933","122492","123675","88715","110459"],"105045":["88350","105918","1813","88532","122911","116022"],"105088":["110339","104531","89449","88468","88515","1813"],"105121":["111109","88368","122473","71270","122637","88748"],"105229":["110663","122559","88601","110459","88698","109877"],"105242":["122589","89279","122959","88660","88468","122925"],"105437":["122656","88308","1422","123625","25453","123019"],"105480":["115744","122615","123583","122589","122925","89279"],"105918":["1813","104555","88633","105045","123644","122850"],"107294":["110339","122518","122606","49344","123644","123382"],"109877":["105229","88364","88601","122559","110663","88984"],"109891":["122539","88323","58858","88368","89027","111109"],"109915":["110459","88601","98747","96356","88994","123081"],"110124":["110225","110446","119705","88938","122773","88984"],"110225":["110124","122773","88984","88938","119705","96356"],"110339":["122380","88468","105088","88633","71337","114349"],"110373":["110339","107294","123382","122369","122380","122946"],"110446":["115736","110454","123144","122773","123563","123027"],"110454":["110446","115736","122773","123144","123563","96356"],"110459":["96356","71738","123144","123133","1787","98747"],"110502":["98747","123144","110459","122801","96081","119705"],"110534":["89339","116022","105045","122668","105480","123625"],"110538":["88994","122801","122773","96081","123133","96356"],"110572":["122473","88368","123665","54157","123653","122539"],"110663":["122559","105229","88601","88698","123144","110459"],"110791":["1422","25453","111109","122394","122637","88368"],"111067":["123229","1813","104531","104555","122533","88350"],"111109":["88323","58858","122473","88368","71270","122637"],"111116":["122492","122933","90964","105009","123675","122443"],"114349":["88633","122375","110339","88468","122380","123229"],"115736":["122773","123563","123133","96350","123144","110446"],"115744":["105480","123583","122589","89279","105918","122615"],"116022":["88827","89167","88350","105045","123644","104555"],"119705":["96356","123563","115736","123133","122773","88984"],"122369":["122606","28286","107294","122946","49344","88515"],"122375":["114349","123625","88468","122925","88633","88558"],"122380":["88515","110339","88468","114349","31119","89010"],"122394":["122637","110791","111109","88323","1422","88368"],"122419":["88721","123563","119705","88938","110454","110446"],"122428":["115736","123133","122773","110459","96356","122559"],"122437":["88468","88532","122911","122518","88810","88827"],"122443":["122933","123305","90964","123675","105009","88715"],"122462":["123033","122637","122473","111109","58858","105121"],"122473":["88368","71270","111109","88934","89236","89010"],"122492":["122933","111116","123305","105009","123675","88715"],"122518":["88350","123644","107294","88827","110339","88532"],"122533":["88649","71692","88350","104555","72023","1813"],"122539":["88323","109891","89027","89236","88368","111109"],"122552":["122559","88698","110663","71738","105229","110459"],"122559":["110663","105229","88601","88698","115736","122552"],"122587":["104977","123027","58621","123192","88364","88698"],"122589":["88558","105242","104555","122959","105918","88633"],"122606":["123644","122369","122850","107294","49344","114349"],"122615":["122959","122925","105480","88308","123625","71337"],"122637":["88323","88748","111109","71270","88368","142763"],"122646":["71692","30552","110339","114349","88649","122946"],"122656":["1422","59293","122394","105437","25453","110791"],"122668":["122925","88478","1813","105045","122375","111067"],"122684":["110502","98747","88698","122801","58621","110538"],"122753":["123027","88849","110502","122801","122587","88364"],"122756":["1787","104977","88364","110459","109877","122587"],"122773":["115736","123133","110446","96356","123563","123144"],"122788":["122539","25453","1422","122637","88368","111109"],"122801":["88703","96081","123144","110538","123133","88698"],"122850":["104555","123644","105918","88633","88649","71692"],"122899":["90964","123675","105009","88715","88748","122933"],"122911":["88532","104555","88350","88827","122437","122518"],"122925":["89279","122615","123625","122959","88944","88308"],"122933":["123305","123675","122492","88715","105009","90964"],"122946":["110339","28286","107294","122369","123382","49344"],"122959":["88802","89279","122615","122925","88468","71337"],"123019":["88308","123625","88944","122850","122925","105918"],"123027":["110446","123144","88698","122587","115736","104977"],"123033":["122462","122637","111109","122925","105121","122473"],"123081":["88601","110459","110663","109915","123027","122559"],"123092":["123027","88698","123144","115736","88521","88601"],"123133":["122773","123144","115736","96356","119705","123563"],"123141":["96350","89000","122587","123027","104977","88521"],"123144":["123133","115736","123563","110446","122773","96356"],"123192":["122587","123027","123092","122801","104977","123141"],"123214":["88748","111109","88323","88368","122637","31119"],"123229":["104555","88633","88468","142764","1813","111067"],"123305":["122933","105009","123675","88715","122492","90964"],"123382":["110339","71337","122606","107294","88810","49344"],"123520":["72023","88633","104555","88478","123229","88468"],"123556":["123675","105009","88715","123305","88748","88394"],"123563":["115736","123144","119705","122773","110446","96350"],"123583":["115744","105480","122589","88660","88558","105242"],"123625":["88308","122925","122375","88944","123019","122615"],"123644":["88350","88633","122850","105918","122606","122518"],"123653":["89236","110572","122539","122473","111109","88368"],"123665":["110572","88368","88323","89010","31119","71270"],"123675":["88715","122933","123305","90964","105009","122492"],"141713":["88950","123141","89000","96350","88703","123027"],"1422":["110791","25453","122539","122394","109891","122788"],"142763":["122637","89010","31119","88368","88748","54157"],"142764":["123229","88478","88633","104555","122375","105918"],"1589":["123027","122587","122801","88521","58621","123192"],"1787":["110459","104977","88364","96356","71738","89171"],"1813":["105918","88633","104555","71337","123229","88350"],"25453":["111109","88323","110791","122637","31119","58858"],"28286":["122369","122946","110339","122606","122380","88515"],"30552":["71692","89408","89449","89167","104531","110339"],"31098":["114349","107294","110339","89408","123644","71692"],"31119":["89010","88368","88323","111109","88748","122637"],"49344":["122850","107294","122606","104555","110339","122518"],"54157":["88748","122637","88368","122473","111109","110572"],"58621":["104977","98747","122587","110459","88984","88698"],"58858":["111109","88323","109891","122637","122539","122473"],"59293":["58858","122656","88323","122637","1422","122394"],"59294":["110124","110459","88521","104957","88984","92209"],"71270":["88368","88934","122473","89010","111109","122637"],"71337":["110339","88633","1813","122959","88468","114349"],"71692":["122533","88649","104555","122850","114349","89408"],"71738":["110459","123144","96356","123133","88698","88601"],"72023":["88633","122533","123520","104531","104555","123229"],"88308":["123625","122925","123019","88944","122615","122375"],"88316":["88532","105045","105480","122615","122437","88810"],"88323":["122637","111109","88748","122539","88368","71270"],"88350":["105045","123644","122533","122518","88633","88827"],"88364":["104977","1787","122587","109877","88984","92209"],"88368":["89010","71270","122473","88748","31119","88323"],"88384":["71738","110663","88364","88698","123027","123144"],"88394":["122637","88323","111109","31119","71270","88368"],"88453":["98747","88994","88849","104957","96081","89000"],"88468":["88515","110339","123229","122959","122375","114349"],"88478":["142764","104555","88558","105918","122375","88633"],"88515":["122380","88468","110339","114349","88810","88633"],"88521":["96356","123133","104977","88984","119705","123563"],"88532":["122911","88350","122437","122518","105045","123229"],"88558":["122589","88478","122375","123583","88633","104555"],"88567":["122559","88364","88698","123027","110459","110663"],"88601":["88698","122559","105229","110663","110459","71738"],"88633":["123229","104555","114349","1813","123644","105918"],"88649":["122533","71692","122850","88350","71337","104555"],"88660":["88944","89279","9486","122925","123583","105242"],"88698":["88601","122559","71738","123144","122801","110663"],"88703":["122801","96350","122773","96081","123133","123027"],"88715":["123675","122933","123305","90964","105009","122492"],"88721":["123563","96356","123144","122419","119705","110454"],"88748":["88323","88368","122637","89010","111109","71270"],"88802":["122959","88468","122615","110339","89279","122925"],"88810":["88468","88515","114349","122437","123382","122380"],"88827":["88350","122911","116022","122518","110339","71337"],"88849":["110502","98747","123027","122801","88938","96081"],"88934":["71270","88368","122473","89010","88748","89236"],"88938":["96356","119705","122773","88721","88984","88994"],"88944":["88660","122925","89279","88308","123625","123019"],"88950":["141713","123141","88521","58621","89171","123027"],"88984":["119705","104977","96356","115736","122773","88521"],"88994":["96356","98747","122773","110538","123133","110459"],"89000":["96350","96081","123563","123144","122801","115736"],"89010":["88368","31119","71270","88748","122473","88934"],"89020":["122375","88478","142764","122589","123229","122959"],"89027":["122539","109891","111109","110572","88368","88323"],"89167":["1813","104555","123229","122533","88633","116022"],"89171":["104977","123563","88984","88521","115736","96356"],"89236":["122473","88323","122539","88934","123653","88368"],"89279":["122925","122959","9486","88660","105242","88944"],"89339":["110534","88984","122428","116022","104977","110459"],"89408":["71692","89167","123644","123229","122533","122606"],"89449":["123229","105088","88633","104531","110339","88468"],"89464":["88994","96356","88601","122773","109915","110459"],"90964":["123675","122933","88715","123305","122492","105009"],"92209":["1787","123027","88364","123081","110459","104977"],"9486":["89279","88660","122925","88944","88308","105242"],"96081":["123144","96356","122801","123133","123563","122773"],"96350":["115736","123563","89000","122773","119705","123144"],"96356":["88994","123133","119705","110459","122773","123144"],"98747":["88994","110459","96356","122801","71738","58621"]}};
@@ -183,6 +201,7 @@ const BY_ID = Object.fromEntries(MPS.map(m => [m.id, m]));
 const VIDEO = new Set(DATA.video);
 const LOOK = DATA.look || {}; // id -> 6 most similar-looking MPs, from face matching
 const LESSON_SIZE = 10;
+const DAILY_GOAL = 3; // lessons
 const MAX_BOX = 5;
 const INTERVALS = [0, 10*60e3, 864e5, 3*864e5, 7*864e5, 21*864e5]; // by box
 const MASTERED_BOX = 4;
@@ -192,10 +211,12 @@ const LEVELS = [
   {n:3, title:'Name ↔ riding', desc:'No photo. Match names and ridings both ways.', kinds:['nr','rn']},
 ];
 const PROV_ABBR = {'Alberta':'AB','British Columbia':'BC','Manitoba':'MB','New Brunswick':'NB','Newfoundland and Labrador':'NL','Northwest Territories':'NT','Nova Scotia':'NS','Nunavut':'NU','Ontario':'ON','Prince Edward Island':'PE','Quebec':'QC','Saskatchewan':'SK','Yukon':'YT'};
+const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
 
 /* ---------- storage ---------- */
 const KEY = 'mpQuiz.v1';
-function freshState(){ return {xp:0, streak:0, lastDay:null, cards:{}, best:{}, deck:'all', unlockAll:false, sound:true}; }
+function freshState(){ return {xp:0, streak:0, lastDay:null, cards:{}, best:{}, deck:'all', unlockAll:false, sound:true, today:{day:null, lessons:0}}; }
 let S;
 try { S = Object.assign(freshState(), JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e){ S = freshState(); }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
@@ -208,17 +229,20 @@ function liveStreak(){
 }
 function bumpStreak(){
   const today = dayStr(new Date()), y = dayStr(new Date(Date.now()-864e5));
+  if (S.today.day !== today) S.today = {day: today, lessons: 0};
+  S.today.lessons++;
   if (S.lastDay === today) return;
   S.streak = (S.lastDay === y) ? S.streak + 1 : 1;
   S.lastDay = today;
 }
+const lessonsToday = () => S.today.day === dayStr(new Date()) ? S.today.lessons : 0;
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 const photo = id => `photos/${id}.jpg`;
-const show = id => ['home','lesson','results','study'].forEach(x => $(x).classList.toggle('hidden', x!==id));
+const show = id => { ['home','lesson','results','study'].forEach(x => $(x).classList.toggle('hidden', x!==id)); window.scrollTo(0,0); };
 
 function deckIds(deck){
   if (deck === 'all') return MPS.map(m=>m.id);
@@ -265,38 +289,36 @@ function beep(ok){
 /* ---------- home ---------- */
 function renderHome(){
   const ids = deckIds(S.deck);
-  const sel = $('deck');
-  if (!sel.options.length){
-    const provs = [...new Set(MPS.map(m=>m.prov))].sort();
-    const opt = (v,l) => `<option value="${esc(v)}">${esc(l)}</option>`;
-    sel.innerHTML = opt('all', `All Liberal MPs (${MPS.length})`)
-      + opt('video', `This video's MPs (${VIDEO.size})`)
-      + `<optgroup label="By province">` + provs.map(p => opt(p, `${p} (${deckIds(p).length})`)).join('') + `</optgroup>`;
-  }
-  sel.value = S.deck;
-  $('deckCount').textContent = `${deckLabel(S.deck)} · ${ids.length} MPs`;
+  const provs = [...new Set(MPS.map(m=>m.prov))].sort();
+  const decks = [['all','All',MPS.length], ['video','This video',VIDEO.size], ...provs.map(p => [p, PROV_ABBR[p] || p, deckIds(p).length])];
+  $('decks').innerHTML = decks.map(([v,l,n]) => `<button class="pill${v===S.deck?' on':''}" data-deck="${esc(v)}" title="${esc(deckLabel(v))}">${esc(l)}<small>${n}</small></button>`).join('');
+  document.querySelectorAll('[data-deck]').forEach(b => b.onclick = () => { S.deck = b.dataset.deck; save(); renderHome(); });
+  const on = document.querySelector('.pill.on'); if (on) on.scrollIntoView({block:'nearest', inline:'nearest'});
+
+  $('deckName').textContent = `${ids.length} MPs`;
   $('sStreak').textContent = liveStreak();
   $('sXp').textContent = S.xp;
   $('sMast').textContent = LEVELS.reduce((a,L)=>a+levelProgress(L.n, ids).mastered, 0);
-  $('soundBtn').textContent = S.sound ? '🔊' : '🔇';
+  const done = lessonsToday();
+  $('goalTrack').innerHTML = Array.from({length: DAILY_GOAL}, (_,i) => `<i class="${i < done ? 'done' : ''}"></i>`).join('');
+  $('goalText').innerHTML = done >= DAILY_GOAL ? `<b>Goal reached</b> · ${done} lessons today` : `You've done <b>${done} of ${DAILY_GOAL}</b> lessons today`;
+  $('soundBtn').innerHTML = S.sound ? ICON_SOUND : ICON_MUTE;
   $('unlockAll').checked = S.unlockAll;
+
+  const nextLevel = [...LEVELS].reverse().find(L => unlocked(L.n));
   $('levels').innerHTML = LEVELS.map(L => {
     const p = levelProgress(L.n, ids), ok = unlocked(L.n);
     const pct = p.total ? Math.round(100*p.mastered/p.total) : 0;
-    const status = ok
-      ? `${p.mastered} of ${p.total} mastered · ${p.seen} seen`
-      : `Locked · score 80% in Level ${L.n-1} to open`;
-    return `<button class="level" data-level="${L.n}" ${ok?'':'disabled'}>
-      <span class="num">${L.n}</span>
-      <span style="flex:1;min-width:0"><div class="t">${L.title}</div><div class="d">${L.desc}</div>
-      <div class="d" style="margin-top:4px">${status}</div>
-      <div class="meter"><i style="width:${pct}%"></i></div></span>
-      ${ok?'':'<span class="lock">🔒</span>'}</button>`;
+    return `<button class="fc${ok && L === nextLevel ? ' next' : ''}" data-level="${L.n}" ${ok?'':'disabled'}>
+      <div class="fc-top"><span class="tag${ok?'':' grey'}">Level ${L.n}</span><span class="meta">${ok ? `${p.mastered} of ${p.total} mastered` : '🔒 Locked'}</span></div>
+      <div class="t">${L.title}</div>
+      <div class="d">${ok ? L.desc : `Score 80% in Level ${L.n-1} to open.`}</div>
+      ${ok ? `<div class="bar"><i style="width:${pct}%"></i></div><span class="go">${p.seen ? 'Continue' : 'Start'} →</span>` : ''}
+    </button>`;
   }).join('');
-  document.querySelectorAll('.level').forEach(b => b.onclick = () => startLesson(+b.dataset.level));
+  document.querySelectorAll('.fc[data-level]').forEach(b => b.onclick = () => startLesson(+b.dataset.level));
   show('home');
 }
-$('deck').onchange = e => { S.deck = e.target.value; save(); renderHome(); };
 $('unlockAll').onchange = e => { S.unlockAll = e.target.checked; save(); renderHome(); };
 $('soundBtn').onclick = () => { S.sound = !S.sound; save(); renderHome(); };
 $('resetBtn').onclick = () => {
@@ -368,14 +390,14 @@ function nextQuestion(){
   else if (card.kind === 'fr'){ head = 'Which riding does this MP represent?'; body = `<div class="card"><img class="photo" src="${photo(mp.id)}" alt=""></div>`; }
   else if (card.kind === 'nr'){ head = 'Which riding?'; body = `<div class="card"><div class="bigtext"><div class="main">${esc(mp.name)}</div></div></div>`; }
   else { head = 'Who is the MP for this riding?'; body = `<div class="card"><div class="bigtext"><div class="main">${esc(mp.riding)}</div><div class="prov">${esc(mp.prov)}</div></div></div>`; }
-  $('q').innerHTML = `${isNew ? '<div class="tag">✦ New card</div>' : ''}
+  $('q').innerHTML = `<div class="qtag"><span class="tag">Level ${L.level}</span>${isNew ? ' <span class="tag grey">New</span>' : ''}</div>
     <p class="prompt">${head}</p>${body}
     <div class="opts">${options.map((o,i) => `<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
   document.querySelectorAll('.opt').forEach(b => b.onclick = () => pick(+b.dataset.i));
   $('bar').style.width = `${100*L.done/L.total}%`;
   $('combo').textContent = L.combo >= 2 ? `🔥 ${L.combo}` : '';
   const foot = $('foot'); foot.className = 'foot'; $('fb').innerHTML = '';
-  $('footBtn').textContent = 'Check'; $('footBtn').className = 'btn'; $('footBtn').disabled = true;
+  $('footBtn').textContent = 'Check'; $('footBtn').disabled = true;
 }
 
 function pick(i){
@@ -432,8 +454,7 @@ function check(){
     <div><div class="h">${ok ? cheers[Math.floor(Math.random()*cheers.length)] : 'Correct answer:'}</div>
     <div class="ans">${esc(mp.name)} · ${esc(mp.riding)} (${PROV_ABBR[mp.prov]||esc(mp.prov)})</div></div>`;
   $('footBtn').textContent = 'Continue';
-  $('footBtn').className = 'btn' + (ok ? '' : ' red');
-  $('footBtn').classList.add('pop');
+  $('footBtn').classList.remove('pop'); void $('footBtn').offsetWidth; $('footBtn').classList.add('pop');
 }
 
 $('footBtn').onclick = () => {
@@ -458,21 +479,24 @@ function finishLesson(){
   bumpStreak();
   save();
   const unlockedNow = L.level < 3 && acc >= 80 && !S.unlockAll;
-  const lvl = L.level;
-  $('results').innerHTML = `<div class="done">
-    <div class="big">${acc === 100 ? '🏆' : acc >= 80 ? '🎉' : '💪'}</div>
-    <h1>${acc === 100 ? 'Perfect lesson!' : 'Lesson complete!'}</h1>
-    <p class="sub">${deckLabel(S.deck)} · Level ${lvl}${unlockedNow ? ` · Level ${lvl+1} is open` : ''}</p>
-    <div class="tiles">
-      <div class="tile"><div class="l">Total XP</div><div class="v">⚡ ${L.xp}</div></div>
-      <div class="tile g"><div class="l">Accuracy</div><div class="v">🎯 ${acc}%</div></div>
-      <div class="tile b"><div class="l">Streak</div><div class="v">🔥 ${S.streak}</div></div>
+  const lvl = L.level, done = lessonsToday();
+  $('results').innerHTML = `<header class="hdr"><div class="tt"><div class="eyebrow">Lesson complete</div><div class="big">${acc === 100 ? 'Perfect lesson! 🏆' : acc >= 80 ? 'Nice work! 🎉' : 'Keep going! 💪'}</div></div></header>
+    <div class="res">
+    <div class="drop">
+      <div class="drop-top"><span class="live"></span>Level ${lvl}<span class="of">${esc(deckLabel(S.deck))}</span></div>
+      ${unlockedNow ? `<h2>Level ${lvl+1} is open</h2><small>You scored 80% or more.</small>` : ''}
+      <div class="nums">
+        <div class="num"><b>+${L.xp}</b><span>XP</span></div>
+        <div class="num"><b>${acc}%</b><span>accuracy</span></div>
+        <div class="num"><b>${S.streak}</b><span>day streak</span></div>
+      </div>
+      <div class="track">${Array.from({length: DAILY_GOAL}, (_,i) => `<i class="${i < done ? 'done' : ''}"></i>`).join('')}</div>
+      <div class="streak"><span>${done >= DAILY_GOAL ? '<b>Daily goal reached</b>' : `<b>${done} of ${DAILY_GOAL}</b> lessons today`}</span><span>Daily goal</span></div>
     </div>
-    ${L.missed.length ? `<h2>Review these</h2><div class="review">${L.missed.map(id => { const m = BY_ID[id]; return `<div class="rv"><img src="${photo(id)}" alt=""><div><div class="n">${esc(m.name)}</div><div class="r">${esc(m.riding)} · ${esc(m.prov)}</div></div></div>`; }).join('')}</div>` : ''}
-    <div style="display:grid;gap:12px;margin-top:28px">
-      <button class="btn" id="againBtn">Next lesson</button>
-      <button class="btn blue" id="homeBtn">Back to levels</button>
-    </div></div>`;
+    ${L.missed.length ? `<div class="sec">Review these</div>${L.missed.map(id => { const m = BY_ID[id]; return `<div class="rv"><img src="${photo(id)}" alt=""><div><div class="n">${esc(m.name)}</div><div class="r">${esc(m.riding)} · ${esc(m.prov)}</div></div></div>`; }).join('')}` : ''}
+    <button class="btn" id="againBtn" style="margin-top:8px">Next lesson</button>
+    <button class="btn ghost" id="homeBtn">Back to levels</button>
+    </div>`;
   $('againBtn').onclick = () => startLesson(lvl);
   $('homeBtn').onclick = renderHome;
   L = null;
@@ -485,17 +509,16 @@ function renderStudy(){
   const label = id => {
     const b = Math.min(...LEVELS.flatMap(Lv => Lv.kinds.map(k => box(`${k}:${id}`))));
     const seen = LEVELS.some(Lv => Lv.kinds.some(k => S.cards[`${k}:${id}`]));
-    if (b >= MASTERED_BOX) return '<div class="s" style="color:var(--blue)">Mastered</div>';
-    return seen ? '<div class="s" style="color:var(--orange)">Learning</div>' : '<div class="s" style="color:var(--muted)">New</div>';
+    if (b >= MASTERED_BOX) return '<span class="s tag">Mastered</span>';
+    return seen ? '<span class="s tag">Learning</span>' : '<span class="s tag grey">New</span>';
   };
   const sorted = ids.map(id => BY_ID[id]).sort((a,b) => a.last.localeCompare(b.last, 'fr'));
-  $('study').innerHTML = `<div class="lessontop"><button class="close" id="studyClose" title="Back">✕</button>
-    <div style="font-weight:900;font-size:20px">${deckLabel(S.deck)} · ${ids.length}</div></div>
+  $('study').innerHTML = `<header class="hdr"><button class="circ" id="studyClose" title="Back" aria-label="Back">←</button>
+    <div class="tt"><div class="eyebrow">Study · ${ids.length} MPs</div><div class="big">${esc(deckLabel(S.deck))}</div></div></header>
     <div class="grid">${sorted.map(m => `<div class="gcard"><img src="${photo(m.id)}" alt="" loading="lazy">
       <div class="n">${esc(m.name)}</div><div class="r">${esc(m.riding)} · ${PROV_ABBR[m.prov]||esc(m.prov)}</div>${label(m.id)}</div>`).join('')}</div>`;
   $('studyClose').onclick = renderHome;
   show('study');
-  window.scrollTo(0,0);
 }
 
 renderHome();
